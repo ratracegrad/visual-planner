@@ -49,14 +49,19 @@
                                     class="d-inline-flex align-center justify-center slot border"
                                     :class="setBorder(n)"
                                     :key="n"
+                                    @drop="onDrop(n, $event)"
+                                    @dragover="onDragOver(n, $event)"
                                 ></div>
                             </template>
 
                             <template v-for="(entry, i) in machine.data">
                                 <div
-                                    :key="`${machine}-${i}`"
+                                    :id="`${machine.name}-${i}`"
+                                    :key="`${machine.name}-${i}`"
                                     class="entry"
                                     :style="getStyle(entry)"
+                                    draggable="true"
+                                    @dragstart="onDragStart(entry, $event)"
                                 >
                                     <span class="workOrderId">{{
                                         entry.workOrderId
@@ -265,6 +270,19 @@ export default {
             } else {
                 return ['border-dashed-left', 'border-dashed-right'];
             }
+        },
+        onDrop(n, event) {
+            n = n - 1;
+            event.preventDefault();
+            const data = event.dataTransfer.getData('text');
+            const item = document.getElementById(data);
+            item.style.left = `${n * 75 + 1}px`;
+        },
+        onDragOver(n, event) {
+            event.preventDefault();
+        },
+        onDragStart(item, event) {
+            event.dataTransfer.setData('text', event.target.id);
         }
     }
 };
