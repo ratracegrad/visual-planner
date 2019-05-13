@@ -4,40 +4,29 @@
             <v-toolbar-title class="headline text-uppercase">
                 <span>Visual Planner</span>
             </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn light class="yellow" @click="show12 = true">12 hour</v-btn>
+            <v-btn light class="yellow" @click="show12 = false">24 hour</v-btn>
         </v-toolbar>
 
         <v-content>
-            <v-tabs v-model="active" dark slider-color="yellow" centered>
-                <v-tab :key="'fifteen'" @click="active = 'fifteen'">
-                    Fifteen Minutes
-                </v-tab>
-                <v-tab :key="'hourly'" @click="active = 'fifteen'">
-                    Hourly
-                </v-tab>
-
-                <v-tab-item :key="'fifteen'">
-                    <fifteen-layout></fifteen-layout>
-                </v-tab-item>
-                <v-tab-item :key="'hourly'">
-                    <hourly-layout></hourly-layout>
-                </v-tab-item>
-            </v-tabs>
+            <fifteen-layout :show12="show12"></fifteen-layout>
         </v-content>
     </v-app>
 </template>
 
 <script>
 import FifteenLayout from '@/components/FifteenLayout';
-import HourlyLayout from '@/components/HourlyLayout';
+
 export default {
     name: 'App',
     components: {
-        FifteenLayout,
-        HourlyLayout
+        FifteenLayout
     },
     data() {
         return {
-            active: null
+            active: null,
+            show12: false
         };
     }
 };

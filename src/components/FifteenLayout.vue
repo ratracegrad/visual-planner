@@ -1,11 +1,11 @@
 <template>
     <v-container fluid>
-        <v-layout row mb-3>
-            <v-spacer></v-spacer>
-            <v-btn light class="yellow" @click="show12 = true">12 hour</v-btn>
-            <v-btn light class="yellow" @click="show12 = false">24 hour</v-btn>
-            <v-spacer></v-spacer>
-        </v-layout>
+        <!--        <v-layout row mb-3>-->
+        <!--            <v-spacer></v-spacer>-->
+        <!--            <v-btn light class="yellow" @click="show12 = true">12 hour</v-btn>-->
+        <!--            <v-btn light class="yellow" @click="show12 = false">24 hour</v-btn>-->
+        <!--            <v-spacer></v-spacer>-->
+        <!--        </v-layout>-->
         <v-layout row style="overflow-y: scroll;">
             <!-- container left -->
             <v-flex xs2>
@@ -96,7 +96,6 @@
 export default {
     name: 'FifteenLayout',
     data: () => ({
-        show12: false,
         _startX: 0,
         _startY: 0,
         _offsetX: 0,
@@ -248,6 +247,7 @@ export default {
             }
         ]
     }),
+    props: ['show12'],
     methods: {
         showHour(hour, min) {
             let minConvertor = {
