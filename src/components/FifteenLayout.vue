@@ -9,7 +9,7 @@
         <v-layout row style="overflow-y: scroll;">
             <!-- container left -->
             <v-flex xs2>
-                <v-container fluid mr-0 pr-0 class="timeSlots">
+                <v-container fluid mx-0 px-0 class="timeSlots">
                     <v-layout row align-center style="height: 50px;">
                         <v-flex>
                             <div class="text-align-center">Machine</div>
@@ -28,8 +28,14 @@
             </v-flex>
             <!-- container right -->
             <v-flex xs10>
-                <v-container fluid ml-0 pl-0 class="timeSlots">
-                    <v-layout row align-center>
+                <v-container
+                    fluid
+                    ml-0
+                    pl-0
+                    class="timeSlots"
+                    id="scrollContainer"
+                >
+                    <v-layout row align-center style="height: 50px;">
                         <template v-for="hour in 24">
                             <template v-for="min in 4">
                                 <div
@@ -49,8 +55,11 @@
                                     class="d-inline-flex align-center justify-center slot border"
                                     :class="setBorder(n)"
                                     :key="n"
-                                    @drop="onDrop(n, $event)"
+                                    :id="`day-${machine.name}-${n}`"
+                                    @drop.self="onDrop(n, $event)"
                                     @dragover="onDragOver(n, $event)"
+                                    @dragenter="onDragEnter($event)"
+                                    @dragleave="onDragLeave($event)"
                                 ></div>
                             </template>
 
@@ -62,6 +71,13 @@
                                     :style="getStyle(entry)"
                                     draggable="true"
                                     @dragstart="onDragStart(entry, $event)"
+                                    @mousedown="
+                                        onMouseDown(
+                                            `${machine.name}-${i}`,
+                                            $event
+                                        )
+                                    "
+                                    @mouseup="onMouseUp()"
                                 >
                                     <span class="workOrderId">{{
                                         entry.workOrderId
@@ -81,6 +97,16 @@ export default {
     name: 'FifteenLayout',
     data: () => ({
         show12: false,
+        _startX: 0,
+        _startY: 0,
+        _offsetX: 0,
+        _offsetY: 0,
+        _dragElement: null,
+        _viewportWidth: null,
+        _edgeSize: 500,
+        _edgeRight: null,
+        _edgeLeft: null,
+        timer: null,
         machines: [
             {
                 name: 'Brushless Drill',
@@ -273,7 +299,7 @@ export default {
         },
         onDrop(n, event) {
             n = n - 1;
-            event.preventDefault();
+            event.target.classList.remove('dragHover'); // remove highlight on day square
             const data = event.dataTransfer.getData('text');
             const item = document.getElementById(data);
             item.style.left = `${n * 75 + 1}px`;
@@ -281,8 +307,25 @@ export default {
         onDragOver(n, event) {
             event.preventDefault();
         },
+        onDragEnter(event) {
+            event.target.classList.add('dragHover');
+        },
+        onDragLeave(event) {
+            event.target.classList.remove('dragHover');
+        },
         onDragStart(item, event) {
             event.dataTransfer.setData('text', event.target.id);
+        },
+        onMouseDown(entry, event) {
+            this._startX = event.clientX;
+            this._startY = event.clientY;
+            this._offsetX = document.getElementById(entry).offsetLeft;
+            this._offsetY = document.getElementById(entry).offsetTop;
+            this._viewportWidth = document.documentElement.clientWidth;
+            this._dragElement = document.getElementById(entry);
+        },
+        onMouseUp() {
+            this._dragElement = null;
         }
     }
 };
@@ -309,28 +352,36 @@ export default {
     display: inline-block;
     width: 75px;
     min-width: 75px;
-    height: 50px;
+    height: 75px;
     box-sizing: border-box;
     text-align: center;
 }
 .machine-title {
-    height: 50px;
-    line-height: 50px;
+    height: 75px;
+    line-height: 75px;
 }
 .timeSlots {
     overflow-x: auto;
 }
 .entry {
     position: absolute;
-    top: 10px;
+    bottom: 3px;
     height: 30px;
+    border-radius: 10px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
 }
 .relative {
     position: relative;
 }
 .workOrderId {
     color: white;
-    padding-left: 3px;
+    padding-left: 8px;
     line-height: 30px;
+    font-weight: 500;
+}
+.dragHover {
+    box-shadow: inset 0 0 0.2em 0.2em yellow;
 }
 </style>
