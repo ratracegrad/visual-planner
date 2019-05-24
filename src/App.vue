@@ -26,7 +26,7 @@ export default {
     data() {
         return {
             active: null,
-            show12: false
+            show12: true
         };
     }
 };

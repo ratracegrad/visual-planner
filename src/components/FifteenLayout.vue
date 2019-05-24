@@ -1,11 +1,5 @@
 <template>
     <v-container fluid>
-        <!--        <v-layout row mb-3>-->
-        <!--            <v-spacer></v-spacer>-->
-        <!--            <v-btn light class="yellow" @click="show12 = true">12 hour</v-btn>-->
-        <!--            <v-btn light class="yellow" @click="show12 = false">24 hour</v-btn>-->
-        <!--            <v-spacer></v-spacer>-->
-        <!--        </v-layout>-->
         <v-layout row style="overflow-y: scroll;">
             <!-- container left -->
             <v-flex xs2>
@@ -21,25 +15,37 @@
                         :key="machine.name"
                     >
                         <div class="subheading machine-title">
-                            {{ machine.name }}
+                            <v-icon
+                                left
+                                v-if="machine.status === 'up'"
+                                color="sbdGreen"
+                                >arrow_upward</v-icon
+                            >
+                            <v-icon
+                                left
+                                v-else-if="machine.status === 'down'"
+                                color="sbdRed"
+                                >arrow_downward</v-icon
+                            >
+                            <v-icon
+                                left
+                                v-else-if="machine.status === 'maintenance'"
+                                color="sbdYellow"
+                                >change_history</v-icon
+                            >
+                            <span>{{ machine.name }}</span>
                         </div>
                     </v-layout>
                 </v-container>
             </v-flex>
             <!-- container right -->
             <v-flex xs10>
-                <v-container
-                    fluid
-                    ml-0
-                    pl-0
-                    class="timeSlots"
-                    id="scrollContainer"
-                >
+                <v-container fluid class="timeSlots" id="scrollContainer">
                     <v-layout row align-center style="height: 50px;">
                         <template v-for="hour in 24">
-                            <template v-for="min in 4">
+                            <template v-for="min in 2">
                                 <div
-                                    class="d-inline-flex align-center justify-center slot"
+                                    class="d-inline-flex align-center justify-start slot timeEntry"
                                     :key="`${hour}-${min}`"
                                 >
                                     {{ showHour(hour, min) }}
@@ -50,7 +56,7 @@
 
                     <template v-for="machine in machines">
                         <v-layout row :key="machine.name" class="relative">
-                            <template v-for="n in 96">
+                            <template v-for="n in 48">
                                 <div
                                     class="d-inline-flex align-center justify-center slot border"
                                     :class="setBorder(n)"
@@ -79,9 +85,20 @@
                                     "
                                     @mouseup="onMouseUp()"
                                 >
-                                    <span class="workOrderId">{{
-                                        entry.workOrderId
-                                    }}</span>
+                                    <div>
+                                        <v-icon left color="sbdWhite"
+                                            >trending_up</v-icon
+                                        >
+                                        <span
+                                            class="white--text subheading font-weight-bold"
+                                            >{{ entry.workOrderId }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="white--text subheading font-weight-bold"
+                                    >
+                                        #{{ entry.sku }}
+                                    </div>
                                 </div>
                             </template>
                         </v-layout>
@@ -109,15 +126,19 @@ export default {
         machines: [
             {
                 name: 'Brushless Drill',
+                status: 'up',
                 data: [
                     {
-                        workOrderId: 123,
+                        workOrderId: '123',
+                        sku: '04081962',
                         status: 'green',
+                        maintenance: true,
                         offset: 2,
                         length: 8
                     },
                     {
-                        workOrderId: 222,
+                        workOrderId: '222',
+                        sku: '04081962',
                         status: 'red',
                         offset: 24,
                         length: 12
@@ -126,50 +147,52 @@ export default {
             },
             {
                 name: 'Sample Machine',
+                status: 'down',
                 data: [
                     {
                         workOrderId: 123,
+                        sku: '04081962',
                         status: 'green',
                         offset: 0,
                         length: 3
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'green',
                         offset: 5,
                         length: 16
                     },
                     {
                         workOrderId: 'A472',
+                        sku: '04081962',
                         status: 'grey',
                         offset: 25,
                         length: 8
-                    },
-                    {
-                        workOrderId: 'id42',
-                        status: 'red',
-                        offset: 40,
-                        length: 32
                     }
                 ]
             },
             {
                 name: 'Hair Dryer',
+                status: 'maintenance',
                 data: [
                     {
                         workOrderId: 123,
+                        sku: '04081962',
                         status: 'green',
                         offset: 1,
                         length: 5
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'green',
                         offset: 7,
-                        length: 1
+                        length: 2
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'grey',
                         offset: 12,
                         length: 8
@@ -178,15 +201,18 @@ export default {
             },
             {
                 name: 'Blue Yeti Microphone',
+                status: 'up',
                 data: [
                     {
                         workOrderId: 123,
+                        sku: '04081962',
                         status: 'green',
                         offset: 2,
                         length: 2
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'red',
                         offset: 6,
                         length: 3
@@ -195,27 +221,32 @@ export default {
             },
             {
                 name: 'Lucky the Cat',
+                status: 'down',
                 data: [
                     {
                         workOrderId: 123,
+                        sku: '04081962',
                         status: 'green',
                         offset: 0,
                         length: 3
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'green',
                         offset: 5,
                         length: 4
                     },
                     {
                         workOrderId: 'A472',
+                        sku: '04081962',
                         status: 'grey',
                         offset: 13,
                         length: 2
                     },
                     {
                         workOrderId: 'id42',
+                        sku: '04081962',
                         status: 'red',
                         offset: 18,
                         length: 3
@@ -224,24 +255,21 @@ export default {
             },
             {
                 name: 'Nalgene Bottle',
+                status: 'maintenance',
                 data: [
                     {
                         workOrderId: 123,
+                        sku: '04081962',
                         status: 'green',
                         offset: 1,
                         length: 20
                     },
                     {
                         workOrderId: 222,
+                        sku: '04081962',
                         status: 'green',
                         offset: 27,
-                        length: 1
-                    },
-                    {
-                        workOrderId: 222,
-                        status: 'grey',
-                        offset: 34,
-                        length: 32
+                        length: 3
                     }
                 ]
             }
@@ -250,23 +278,27 @@ export default {
     props: ['show12'],
     methods: {
         showHour(hour, min) {
+            console.log(min);
+            if (min === 2) {
+                return '';
+            }
             let minConvertor = {
-                '1': '00',
-                '2': '15',
-                '3': '30',
-                '4': '45'
+                '1': '',
+                '2': '',
+                '3': '',
+                '4': ''
             };
             hour = hour - 1;
             min = +min;
             if (this.show12) {
-                if (hour === 0) {
-                    return `12:${minConvertor[min]} AM`;
-                } else if (hour < 12) {
-                    return `${hour}:${minConvertor[min]} AM`;
+                if (hour === 0 && min === 1) {
+                    return `12AM`;
+                } else if (hour < 12 && min === 1) {
+                    return `${hour}AM`;
                 } else if (hour === 12) {
-                    return `${hour}:${minConvertor[min]} PM`;
+                    return `${hour}PM`;
                 }
-                return `${hour - 12}:${minConvertor[min]} PM`;
+                return `${hour - 12}PM`;
             } else {
                 if (hour === 0) {
                     return `00:${minConvertor[min]} AM`;
@@ -280,7 +312,7 @@ export default {
             let offset = `${machine.offset * 75 + 1}px`;
             let length = `${machine.length * 75 - 2}px`;
             return {
-                background: machine.status,
+                borderTop: `5px solid ${machine.status}`,
                 left: offset,
                 width: length
             };
@@ -298,6 +330,7 @@ export default {
             }
         },
         onDrop(n, event) {
+            console.log('onDrop');
             n = n - 1;
             event.target.classList.remove('dragHover'); // remove highlight on day square
             const data = event.dataTransfer.getData('text');
@@ -305,18 +338,24 @@ export default {
             item.style.left = `${n * 75 + 1}px`;
         },
         onDragOver(n, event) {
+            console.log('onDragOver');
             event.preventDefault();
         },
         onDragEnter(event) {
+            console.log('onDragEnter');
             event.target.classList.add('dragHover');
         },
         onDragLeave(event) {
+            console.log('onDragLeave');
             event.target.classList.remove('dragHover');
         },
         onDragStart(item, event) {
+            console.log('onDragStart');
+            event.target.classList.add('lowerZindex');
             event.dataTransfer.setData('text', event.target.id);
         },
         onMouseDown(entry, event) {
+            console.log('onMouseDown');
             this._startX = event.clientX;
             this._startY = event.clientY;
             this._offsetX = document.getElementById(entry).offsetLeft;
@@ -325,6 +364,7 @@ export default {
             this._dragElement = document.getElementById(entry);
         },
         onMouseUp() {
+            console.log('onMouseUp');
             this._dragElement = null;
         }
     }
@@ -365,23 +405,26 @@ export default {
 }
 .entry {
     position: absolute;
-    bottom: 3px;
-    height: 30px;
-    border-radius: 10px;
-    -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
-    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    top: 3px;
+    height: 69px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #252525;
 }
 .relative {
     position: relative;
 }
 .workOrderId {
     color: white;
-    padding-left: 8px;
-    line-height: 30px;
     font-weight: 500;
 }
 .dragHover {
     box-shadow: inset 0 0 0.2em 0.2em yellow;
+}
+.timeEntry {
+    margin-left: -10px;
+    margin-right: 10px;
 }
 </style>
