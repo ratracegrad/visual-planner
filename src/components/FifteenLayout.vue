@@ -66,6 +66,7 @@
                                     @dragover="onDragOver(n, $event)"
                                     @dragenter="onDragEnter($event)"
                                     @dragleave="onDragLeave($event)"
+                                    @mouseover="onMouseOver($event)"
                                 ></div>
                             </template>
 
@@ -353,6 +354,10 @@ export default {
             console.log('onDragStart');
             event.target.classList.add('lowerZindex');
             event.dataTransfer.setData('text', event.target.id);
+
+            event.target.setAttribute('style', 'pointer-events: none');
+            // document.getElementById(event.target.id).setAttribute('style', 'pointer-events: none');
+            // console.log('after', document.getElementById(event.target.id));
         },
         onMouseDown(entry, event) {
             console.log('onMouseDown');
@@ -366,6 +371,9 @@ export default {
         onMouseUp() {
             console.log('onMouseUp');
             this._dragElement = null;
+        },
+        onMouseOver(event) {
+            console.log('onMouseOver', event);
         }
     }
 };
