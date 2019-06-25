@@ -66,7 +66,6 @@
                                     @dragover="onDragOver(n, $event)"
                                     @dragenter="onDragEnter($event)"
                                     @dragleave="onDragLeave($event)"
-                                    @mouseover="onMouseOver($event)"
                                 ></div>
                             </template>
 
