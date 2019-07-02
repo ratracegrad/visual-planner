@@ -1,115 +1,312 @@
 <template>
-    <v-container fluid>
-        <v-layout row style="overflow-y: scroll;">
-            <!-- container left -->
-            <v-flex xs2>
-                <v-container fluid mx-0 px-0 class="timeSlots">
-                    <v-layout row align-center style="height: 50px;">
-                        <v-flex>
-                            <div class="text-align-center">Machine</div>
-                        </v-flex>
-                    </v-layout>
-                    <v-layout
-                        row
-                        v-for="machine in machines"
-                        :key="machine.name"
-                    >
-                        <div class="subheading machine-title">
-                            <v-icon
-                                left
-                                v-if="machine.status === 'up'"
-                                color="sbdGreen"
-                                >arrow_upward</v-icon
-                            >
-                            <v-icon
-                                left
-                                v-else-if="machine.status === 'down'"
-                                color="sbdRed"
-                                >arrow_downward</v-icon
-                            >
-                            <v-icon
-                                left
-                                v-else-if="machine.status === 'maintenance'"
-                                color="sbdYellow"
-                                >change_history</v-icon
-                            >
-                            <span>{{ machine.name }}</span>
-                        </div>
-                    </v-layout>
-                </v-container>
-            </v-flex>
-            <!-- container right -->
-            <v-flex xs10>
-                <v-container fluid class="timeSlots" id="scrollContainer">
-                    <v-layout row align-center style="height: 50px;">
-                        <template v-for="hour in 24">
-                            <template v-for="min in 2">
-                                <div
-                                    class="d-inline-flex align-center justify-start slot timeEntry"
-                                    :key="`${hour}-${min}`"
-                                >
-                                    {{ showHour(hour, min) }}
-                                </div>
-                            </template>
-                        </template>
-                    </v-layout>
-
-                    <template v-for="machine in machines">
-                        <v-layout row :key="machine.name" class="relative">
-                            <template v-for="n in 48">
-                                <div
-                                    class="d-inline-flex align-center justify-center slot border"
-                                    :class="setBorder(n)"
-                                    :key="n"
-                                    :id="`day-${machine.name}-${n}`"
-                                    @drop.self="onDrop(n, $event)"
-                                    @dragover="onDragOver(n, $event)"
-                                    @dragenter="onDragEnter($event)"
-                                    @dragleave="onDragLeave($event)"
-                                ></div>
-                            </template>
-
-                            <template v-for="(entry, i) in machine.data">
-                                <div
-                                    :id="`${machine.name}-${i}`"
-                                    :key="`${machine.name}-${i}`"
-                                    class="entry"
-                                    :style="getStyle(entry)"
-                                    draggable="true"
-                                    @dragstart="onDragStart(entry, $event)"
-                                    @mousedown="
-                                        onMouseDown(
-                                            `${machine.name}-${i}`,
-                                            $event
-                                        )
-                                    "
-                                    @mouseup="onMouseUp()"
-                                >
-                                    <div>
-                                        <v-icon left color="sbdWhite"
-                                            >trending_up</v-icon
-                                        >
-                                        <span
-                                            class="white--text subheading font-weight-bold"
-                                            >{{ entry.workOrderId }}</span
-                                        >
+    <splitpanes
+        horizontal="horizontal"
+        style="height: calc(100vh - 64px)"
+        class="default-theme"
+    >
+        <span splitpanes-size="95">
+            <v-container fluid fill-height class="noScrollbar">
+                <v-layout row style="overflow-y: scroll;">
+                    <!-- container left -->
+                    <v-flex xs2>
+                        <v-container fluid mx-0 px-0 class="timeSlots">
+                            <v-layout row align-center style="height: 50px;">
+                                <v-flex>
+                                    <div class="text-align-center">
+                                        Machine
                                     </div>
-                                    <div
-                                        class="white--text subheading font-weight-bold"
+                                </v-flex>
+                            </v-layout>
+                            <v-layout
+                                row
+                                v-for="machine in machines"
+                                :key="machine.name"
+                            >
+                                <div class="subheading machine-title">
+                                    <v-icon
+                                        left
+                                        v-if="machine.status === 'up'"
+                                        color="sbdGreen"
+                                        >arrow_upward</v-icon
                                     >
-                                        #{{ entry.sku }}
-                                    </div>
+                                    <v-icon
+                                        left
+                                        v-else-if="machine.status === 'down'"
+                                        color="sbdRed"
+                                        >arrow_downward</v-icon
+                                    >
+                                    <v-icon
+                                        left
+                                        v-else-if="
+                                            machine.status === 'maintenance'
+                                        "
+                                        color="sbdYellow"
+                                        >change_history</v-icon
+                                    >
+                                    <span>{{ machine.name }}</span>
                                 </div>
+                            </v-layout>
+                        </v-container>
+                    </v-flex>
+                    <!-- container right -->
+                    <v-flex xs10>
+                        <v-container
+                            fluid
+                            class="timeSlots"
+                            id="scrollContainer"
+                        >
+                            <v-layout row align-center style="height: 50px;">
+                                <template v-for="hour in 24">
+                                    <template v-for="min in 2">
+                                        <div
+                                            class="d-inline-flex align-center justify-start slot timeEntry"
+                                            :key="`${hour}-${min}`"
+                                        >
+                                            {{ showHour(hour, min) }}
+                                        </div>
+                                    </template>
+                                </template>
+                            </v-layout>
+
+                            <template v-for="machine in machines">
+                                <v-layout
+                                    row
+                                    :key="machine.name"
+                                    class="relative"
+                                >
+                                    <template v-for="n in 48">
+                                        <div
+                                            class="d-inline-flex align-center justify-center slot border"
+                                            :class="setBorder(n)"
+                                            :key="n"
+                                            :id="`day-${machine.name}-${n}`"
+                                            @drop.self="onDrop(n, $event)"
+                                            @dragover="onDragOver(n, $event)"
+                                            @dragenter="onDragEnter($event)"
+                                            @dragleave="onDragLeave($event)"
+                                        ></div>
+                                    </template>
+
+                                    <template
+                                        v-for="(entry, i) in machine.data"
+                                    >
+                                        <div
+                                            :id="`${machine.name}-${i}`"
+                                            :key="`${machine.name}-${i}`"
+                                            class="entry"
+                                            :style="getStyle(entry)"
+                                            draggable="true"
+                                            @dragstart="
+                                                onDragStart(entry, $event)
+                                            "
+                                            @mousedown="
+                                                onMouseDown(
+                                                    `${machine.name}-${i}`,
+                                                    $event
+                                                )
+                                            "
+                                            @mouseup="onMouseUp()"
+                                        >
+                                            <div>
+                                                <v-icon left color="sbdWhite"
+                                                    >trending_up</v-icon
+                                                >
+                                                <span
+                                                    class="white--text subheading font-weight-bold"
+                                                    >{{
+                                                        entry.workOrderId
+                                                    }}</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="white--text subheading font-weight-bold"
+                                            >
+                                                #{{ entry.sku }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                </v-layout>
                             </template>
-                        </v-layout>
-                    </template>
-                </v-container>
-            </v-flex>
-        </v-layout>
-    </v-container>
+                        </v-container>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </span>
+        <span splitpanes-min="5" splitpanes-size="5">
+            <v-container fluid fill-height class="noScrollbar">
+                <v-layout row wrap class="scroll-box-grid px-2">
+                    <v-flex
+                        v-for="(machine, $machineIndex) in machines"
+                        :key="$machineIndex"
+                        class="line-grid-wrap"
+                    >
+                        <span
+                            class="subheading white--text"
+                            style="height: 30px;"
+                            >{{ machine.name }}</span
+                        >
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </span>
+    </splitpanes>
+    <!--    <splitpanes-->
+    <!--        horizontal="horizontal"-->
+    <!--        style="height: 100vh"-->
+    <!--        class="default-theme"-->
+    <!--    >-->
+    <!--        <span splitpanes-size="95">-->
+    <!--            <v-container fluid style="height: 100%;">-->
+    <!--                <v-layout row style="overflow-y: scroll;">-->
+    <!--                    &lt;!&ndash; container left &ndash;&gt;-->
+    <!--                    <v-flex xs2>-->
+    <!--                        <v-container fluid mx-0 px-0 class="timeSlots">-->
+    <!--                            <v-layout row align-center style="height: 50px;">-->
+    <!--                                <v-flex>-->
+    <!--                                    <div class="text-align-center">-->
+    <!--                                        Machine-->
+    <!--                                    </div>-->
+    <!--                                </v-flex>-->
+    <!--                            </v-layout>-->
+    <!--                            <v-layout-->
+    <!--                                row-->
+    <!--                                v-for="machine in machines"-->
+    <!--                                :key="machine.name"-->
+    <!--                            >-->
+    <!--                                <div class="subheading machine-title">-->
+    <!--                                    <v-icon-->
+    <!--                                        left-->
+    <!--                                        v-if="machine.status === 'up'"-->
+    <!--                                        color="sbdGreen"-->
+    <!--                                        >arrow_upward</v-icon-->
+    <!--                                    >-->
+    <!--                                    <v-icon-->
+    <!--                                        left-->
+    <!--                                        v-else-if="machine.status === 'down'"-->
+    <!--                                        color="sbdRed"-->
+    <!--                                        >arrow_downward</v-icon-->
+    <!--                                    >-->
+    <!--                                    <v-icon-->
+    <!--                                        left-->
+    <!--                                        v-else-if="-->
+    <!--                                            machine.status === 'maintenance'-->
+    <!--                                        "-->
+    <!--                                        color="sbdYellow"-->
+    <!--                                        >change_history</v-icon-->
+    <!--                                    >-->
+    <!--                                    <span>{{ machine.name }}</span>-->
+    <!--                                </div>-->
+    <!--                            </v-layout>-->
+    <!--                        </v-container>-->
+    <!--                    </v-flex>-->
+    <!--                    &lt;!&ndash; container right &ndash;&gt;-->
+    <!--                    <v-flex xs10>-->
+    <!--                        <v-container-->
+    <!--                            fluid-->
+    <!--                            class="timeSlots"-->
+    <!--                            id="scrollContainer"-->
+    <!--                        >-->
+    <!--                            <v-layout row align-center style="height: 50px;">-->
+    <!--                                <template v-for="hour in 24">-->
+    <!--                                    <template v-for="min in 2">-->
+    <!--                                        <div-->
+    <!--                                            class="d-inline-flex align-center justify-start slot timeEntry"-->
+    <!--                                            :key="`${hour}-${min}`"-->
+    <!--                                        >-->
+    <!--                                            {{ showHour(hour, min) }}-->
+    <!--                                        </div>-->
+    <!--                                    </template>-->
+    <!--                                </template>-->
+    <!--                            </v-layout>-->
+
+    <!--                            <template v-for="machine in machines">-->
+    <!--                                <v-layout-->
+    <!--                                    row-->
+    <!--                                    :key="machine.name"-->
+    <!--                                    class="relative"-->
+    <!--                                >-->
+    <!--                                    <template v-for="n in 48">-->
+    <!--                                        <div-->
+    <!--                                            class="d-inline-flex align-center justify-center slot border"-->
+    <!--                                            :class="setBorder(n)"-->
+    <!--                                            :key="n"-->
+    <!--                                            :id="`day-${machine.name}-${n}`"-->
+    <!--                                            @drop.self="onDrop(n, $event)"-->
+    <!--                                            @dragover="onDragOver(n, $event)"-->
+    <!--                                            @dragenter="onDragEnter($event)"-->
+    <!--                                            @dragleave="onDragLeave($event)"-->
+    <!--                                        ></div>-->
+    <!--                                    </template>-->
+
+    <!--                                    <template-->
+    <!--                                        v-for="(entry, i) in machine.data"-->
+    <!--                                    >-->
+    <!--                                        <div-->
+    <!--                                            :id="`${machine.name}-${i}`"-->
+    <!--                                            :key="`${machine.name}-${i}`"-->
+    <!--                                            class="entry"-->
+    <!--                                            :style="getStyle(entry)"-->
+    <!--                                            draggable="true"-->
+    <!--                                            @dragstart="-->
+    <!--                                                onDragStart(entry, $event)-->
+    <!--                                            "-->
+    <!--                                            @mousedown="-->
+    <!--                                                onMouseDown(-->
+    <!--                                                    `${machine.name}-${i}`,-->
+    <!--                                                    $event-->
+    <!--                                                )-->
+    <!--                                            "-->
+    <!--                                            @mouseup="onMouseUp()"-->
+    <!--                                        >-->
+    <!--                                            <div>-->
+    <!--                                                <v-icon left color="sbdWhite"-->
+    <!--                                                    >trending_up</v-icon-->
+    <!--                                                >-->
+    <!--                                                <span-->
+    <!--                                                    class="white&#45;&#45;text subheading font-weight-bold"-->
+    <!--                                                    >{{-->
+    <!--                                                        entry.workOrderId-->
+    <!--                                                    }}</span-->
+    <!--                                                >-->
+    <!--                                            </div>-->
+    <!--                                            <div-->
+    <!--                                                class="white&#45;&#45;text subheading font-weight-bold"-->
+    <!--                                            >-->
+    <!--                                                #{{ entry.sku }}-->
+    <!--                                            </div>-->
+    <!--                                        </div>-->
+    <!--                                    </template>-->
+    <!--                                </v-layout>-->
+    <!--                            </template>-->
+    <!--                        </v-container>-->
+    <!--                    </v-flex>-->
+    <!--                </v-layout>-->
+    <!--            </v-container>-->
+    <!--        </span>-->
+    <!--        <span splitpanes-min="5" splitpanes-size="5">-->
+    <!--            <v-container fluid fill-height>-->
+    <!--                <v-layout row wrap style="overflow-y: scroll;">-->
+    <!--                    <v-flex-->
+    <!--                        v-for="(machine, $machineIndex) in machines"-->
+    <!--                        :key="$machineIndex"-->
+    <!--                        class="line-grid-wrap"-->
+    <!--                    >-->
+    <!--                        <span-->
+    <!--                            class="subheading white&#45;&#45;text"-->
+    <!--                            style="min-height: 30px;"-->
+    <!--                            >{{ machine.name }}</span-->
+    <!--                        >-->
+    <!--                    </v-flex>-->
+    <!--                </v-layout>-->
+    <!--            </v-container>-->
+    <!--        </span>-->
+    <!--    </splitpanes>-->
 </template>
 
 <script>
+import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
+
 export default {
     name: 'FifteenLayout',
     data: () => ({
@@ -272,13 +469,313 @@ export default {
                         length: 3
                     }
                 ]
+            },
+            {
+                name: 'Brushless Drill',
+                status: 'up',
+                data: [
+                    {
+                        workOrderId: '123',
+                        sku: '04081962',
+                        status: 'green',
+                        maintenance: true,
+                        offset: 2,
+                        length: 8
+                    },
+                    {
+                        workOrderId: '222',
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 24,
+                        length: 12
+                    }
+                ]
+            },
+            {
+                name: 'Sample Machine',
+                status: 'down',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 0,
+                        length: 3
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 5,
+                        length: 16
+                    },
+                    {
+                        workOrderId: 'A472',
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 25,
+                        length: 8
+                    }
+                ]
+            },
+            {
+                name: 'Hair Dryer',
+                status: 'maintenance',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 1,
+                        length: 5
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 7,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 12,
+                        length: 8
+                    }
+                ]
+            },
+            {
+                name: 'Blue Yeti Microphone',
+                status: 'up',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 2,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 6,
+                        length: 3
+                    }
+                ]
+            },
+            {
+                name: 'Lucky the Cat',
+                status: 'down',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 0,
+                        length: 3
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 5,
+                        length: 4
+                    },
+                    {
+                        workOrderId: 'A472',
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 13,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 'id42',
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 18,
+                        length: 3
+                    }
+                ]
+            },
+            {
+                name: 'Nalgene Bottle',
+                status: 'maintenance',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 1,
+                        length: 20
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 27,
+                        length: 3
+                    }
+                ]
+            },
+            {
+                name: 'Brushless Drill',
+                status: 'up',
+                data: [
+                    {
+                        workOrderId: '123',
+                        sku: '04081962',
+                        status: 'green',
+                        maintenance: true,
+                        offset: 2,
+                        length: 8
+                    },
+                    {
+                        workOrderId: '222',
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 24,
+                        length: 12
+                    }
+                ]
+            },
+            {
+                name: 'Sample Machine',
+                status: 'down',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 0,
+                        length: 3
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 5,
+                        length: 16
+                    },
+                    {
+                        workOrderId: 'A472',
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 25,
+                        length: 8
+                    }
+                ]
+            },
+            {
+                name: 'Hair Dryer',
+                status: 'maintenance',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 1,
+                        length: 5
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 7,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 12,
+                        length: 8
+                    }
+                ]
+            },
+            {
+                name: 'Blue Yeti Microphone',
+                status: 'up',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 2,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 6,
+                        length: 3
+                    }
+                ]
+            },
+            {
+                name: 'Lucky the Cat',
+                status: 'down',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 0,
+                        length: 3
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 5,
+                        length: 4
+                    },
+                    {
+                        workOrderId: 'A472',
+                        sku: '04081962',
+                        status: 'grey',
+                        offset: 13,
+                        length: 2
+                    },
+                    {
+                        workOrderId: 'id42',
+                        sku: '04081962',
+                        status: 'red',
+                        offset: 18,
+                        length: 3
+                    }
+                ]
+            },
+            {
+                name: 'Nalgene Bottle',
+                status: 'maintenance',
+                data: [
+                    {
+                        workOrderId: 123,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 1,
+                        length: 20
+                    },
+                    {
+                        workOrderId: 222,
+                        sku: '04081962',
+                        status: 'green',
+                        offset: 27,
+                        length: 3
+                    }
+                ]
             }
         ]
     }),
     props: ['show12'],
+    components: {
+        Splitpanes
+    },
     methods: {
         showHour(hour, min) {
-            console.log(min);
             if (min === 2) {
                 return '';
             }
@@ -386,7 +883,20 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+.scroll-box-grid {
+    height: 100%;
+    overflow: auto;
+}
+.line-grid-wrap {
+    cursor: pointer;
+    overflow: hidden;
+    width: 100%;
+    border: 2px solid white;
+    color: white;
+    padding: 5px 10px;
+    margin: 0 0 10px;
+}
 .border {
     border-top: 1px solid white;
     border-bottom: 1px solid white;
@@ -441,5 +951,19 @@ export default {
 .timeEntry {
     margin-left: -10px;
     margin-right: 10px;
+}
+.splitpanes.default-theme .splitpanes__pane {
+    background-color: transparent;
+}
+.splitpanes.default-theme .splitpanes__pane {
+    height: 20px;
+}
+.splitpanes.default-theme .splitpanes__splitter:after,
+.splitpanes.default-theme .splitpanes__splitter:before {
+    background-color: black;
+}
+.default-theme.splitpanes--horizontal > .splitpanes__splitter,
+.default-theme .splitpanes--horizontal > .splitpanes__splitter {
+    height: 40px;
 }
 </style>
