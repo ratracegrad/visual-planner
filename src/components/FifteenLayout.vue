@@ -1,12 +1,16 @@
 <template>
     <div>
         <v-toolbar flat color="transparent">
-            <!--            <v-toolbar-title class="headline text-uppercase">-->
-            <!--                <span>Visual Planner</span>-->
-            <!--            </v-toolbar-title>-->
             <v-toolbar-items>
-                <v-icon large class=" ml-5 mr-3">filter_list</v-icon>
-                <v-icon large>tune</v-icon>
+                <v-icon
+                    large
+                    class=" ml-5 mr-3"
+                    @click="filterDialog = !filterDialog"
+                    >filter_list</v-icon
+                >
+                <v-icon large @click="settingsDialog = !settingsDialog"
+                    >tune</v-icon
+                >
             </v-toolbar-items>
             <v-spacer></v-spacer>
             <v-icon left large @click="changeDate('down')"
@@ -17,8 +21,6 @@
                 >keyboard_arrow_right</v-icon
             >
             <v-spacer></v-spacer>
-            <!--            <v-btn light class="yellow" @click="show12 = true">12 hour</v-btn>-->
-            <!--            <v-btn light class="yellow" @click="show12 = false">24 hour</v-btn>-->
         </v-toolbar>
         <splitpanes
             horizontal="horizontal"
@@ -185,6 +187,147 @@
                 </v-container>
             </span>
         </splitpanes>
+
+        <v-dialog v-model="filterDialog" max-width="500" persistent>
+            <v-card>
+                <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
+                    <v-spacer></v-spacer>
+                    <span class="headline">Work Order Filters</span>
+                    <v-spacer></v-spacer>
+                </v-card-title>
+                <v-card-text class="sbdBlackGrey">
+                    <v-form
+                        ref="filterForm"
+                        v-model="filterValid"
+                        lazy-validation=""
+                    >
+                        <v-container grid-list-lg>
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.searchBy"
+                                        :items="items"
+                                        label="Search By"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.department"
+                                        :items="items"
+                                        label="Department"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.tool"
+                                        :items="items"
+                                        label="Select a Tool"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.material"
+                                        :items="items"
+                                        label="Select a Material"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
+
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.startDate"
+                                        :items="items"
+                                        label="Select a Start Date"
+                                        color="black"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.endDate"
+                                        :items="items"
+                                        label="Select an End Date"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions class="sbdBlackGrey pr-3 pl-1">
+                    <v-btn flat large color="sbdYellow">Reset Filters</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        large
+                        outline
+                        color="sbdLightGrey"
+                        @click="filterDialog = false"
+                        >Cancel</v-btn
+                    >
+                    <v-btn large light color="sbdYellow">Apply</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="settingsDialog" width="500">
+            <v-card>
+                <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
+                    <v-spacer></v-spacer>
+                    <span class="headline">Appearance</span>
+                    <v-spacer></v-spacer>
+                </v-card-title>
+                <v-card-text class="sbdBlackGrey">
+                    <v-container grid-list-md mt-0 pt-0>
+                        <v-layout align-center>
+                            <v-flex xs3>Time:</v-flex>
+                            <v-flex xs9>
+                                <v-radio-group row v-model="settings.time">
+                                    <v-radio
+                                        v-for="(time, $timeIndex) in times"
+                                        :key="$timeIndex"
+                                        :label="time"
+                                        :value="time"
+                                    ></v-radio>
+                                </v-radio-group>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout mb-5>
+                            <v-flex xs3>View By:</v-flex>
+                            <v-flex xs9>
+                                <vue-slider
+                                    v-model="settings.viewBy"
+                                    :data="viewBy"
+                                    :marks="true"
+                                ></vue-slider>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout>
+                            <v-flex xs3>Rows:</v-flex>
+                            <v-flex xs9>
+                                <vue-slider
+                                    v-model="settings.rows"
+                                    :data="rows"
+                                    :marks="true"
+                                ></vue-slider>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions class="sbdBlackGrey pr-3 pl-1">
+                    <v-btn flat large color="sbdYellow">Reset Appearance</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        large
+                        outline
+                        color="sbdLightGrey"
+                        @click="settingsDialog = false"
+                        >Cancel</v-btn
+                    >
+                    <v-btn large light color="sbdYellow">Apply</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -196,18 +339,13 @@ import moment from 'moment';
 export default {
     name: 'FifteenLayout',
     data: () => ({
-        _startX: 0,
-        _startY: 0,
-        _offsetX: 0,
-        _offsetY: 0,
-        _dragElement: null,
-        _viewportWidth: null,
-        _edgeSize: 500,
-        _edgeRight: null,
-        _edgeLeft: null,
-        timer: null,
         show12: false,
         dateShown: null,
+        filterDialog: false,
+        filterValid: false,
+        filter: {},
+        settingsDialog: false,
+        settings: {},
         machines: [
             {
                 name: 'Brushless Drill',
@@ -656,7 +794,11 @@ export default {
                     }
                 ]
             }
-        ]
+        ],
+        viewBy: ['4 Hour', '8 Hour', '12 Hour', '24 Hours'],
+        rows: ['S', 'M', 'L'],
+        times: ['12 Hour', '24 Hour'],
+        items: ['Stub 1', 'Stub 2', 'Stub 3']
     }),
     components: {
         Splitpanes
@@ -705,7 +847,6 @@ export default {
             };
         },
         setBorder(n) {
-            // n = n - 1;
             if (n === 0) {
                 return ['border-solid-left', 'border-dashed-right'];
             } else if (n % 4 === 0) {

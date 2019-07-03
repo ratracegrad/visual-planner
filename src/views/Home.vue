@@ -1,13 +1,13 @@
 <template>
-  <HelloWorld />
+    <fifteen-layout></fifteen-layout>
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
-
-  export default {
+import FifteenLayout from '@/components/FifteenLayout';
+export default {
+    name: 'Home',
     components: {
-      HelloWorld
+        FifteenLayout
     }
-  }
+};
 </script>
