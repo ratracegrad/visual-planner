@@ -20,22 +20,20 @@
             <v-icon right large @click="changeDate('up')"
                 >keyboard_arrow_right</v-icon
             >
-            Appearance: {{ appearance.size }}  styleData: {{ styleData }}
             <v-spacer></v-spacer>
-<!--            <v-btn @click="appearance.size = 'small'">Small</v-btn>-->
-            <v-btn @click="setSize('small')">Small</v-btn>
-            <v-btn @click="appearance.size = 'medium'">Medium</v-btn>
-            <v-btn @click="appearance.size = 'large'">Large</v-btn>
+            <v-btn @click="updateStyle">Small</v-btn>
+            <v-btn @click="updateStyle2">Medium</v-btn>
+            <v-btn @click="updateStyle3">Large</v-btn>
         </v-toolbar>
         <splitpanes
             horizontal="horizontal"
             style="height: calc(100vh - 64px)"
+            s
             class="default-theme"
         >
             <span splitpanes-size="95">
-                <v-container fluid fill-height class="noScrollbar">
+                <v-container fluid>
                     <v-layout row style="overflow-y: scroll;">
-                        <!-- container left -->
                         <v-flex xs2>
                             <v-container fluid mx-0 px-0 class="timeSlots">
                                 <v-layout
@@ -82,7 +80,6 @@
                                 </v-layout>
                             </v-container>
                         </v-flex>
-                        <!-- container right -->
                         <v-flex xs10>
                             <v-container
                                 fluid
@@ -116,7 +113,7 @@
                                             <div
                                                 class="d-inline-flex align-center justify-center slot border"
                                                 :class="setBorder(n)"
-                                                v-bind:style="styleData"
+                                                v-bind:style="slotStyle"
                                                 :key="n"
                                                 :id="`day-${machine.name}-${n}`"
                                                 @drop.self="onDrop(n, $event)"
@@ -810,11 +807,10 @@ export default {
         rows: ['S', 'M', 'L'],
         times: ['12 Hour', '24 Hour'],
         items: ['Stub 1', 'Stub 2', 'Stub 3'],
-        styleData: {
-            width: '175px',
-            height: '175px',
-            minWidth: '175px',
-            maxWidth: '175px'
+        slotStyle: {
+            width: '75px',
+            height: '75px',
+            minWidth: '75px'
         }
     }),
     components: {
@@ -824,6 +820,24 @@ export default {
         this.dateShown = moment().format('MM/DD/YY');
     },
     methods: {
+        updateStyle() {
+            console.log('updateStyle');
+            this.slotStyle.width = '50px';
+            this.slotStyle.height = '50px';
+            this.slotStyle.minWidth = '50px';
+        },
+        updateStyle2() {
+            console.log('updateStyle2');
+            this.slotStyle.width = '75px';
+            this.slotStyle.height = '75px';
+            this.slotStyle.minWidth = '75px';
+        },
+        updateStyle3() {
+            console.log('updateStyle3');
+            this.slotStyle.width = '100px';
+            this.slotStyle.height = '100px';
+            this.slotStyle.minWidth = '100px';
+        },
         showHour(hour, min) {
             if (min === 2) {
                 return '';
