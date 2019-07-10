@@ -20,7 +20,12 @@
             <v-icon right large @click="changeDate('up')"
                 >keyboard_arrow_right</v-icon
             >
+            Appearance: {{ appearance.size }}  styleData: {{ styleData }}
             <v-spacer></v-spacer>
+<!--            <v-btn @click="appearance.size = 'small'">Small</v-btn>-->
+            <v-btn @click="setSize('small')">Small</v-btn>
+            <v-btn @click="appearance.size = 'medium'">Medium</v-btn>
+            <v-btn @click="appearance.size = 'large'">Large</v-btn>
         </v-toolbar>
         <splitpanes
             horizontal="horizontal"
@@ -92,7 +97,7 @@
                                     <template v-for="hour in 24">
                                         <template v-for="min in 2">
                                             <div
-                                                class="d-inline-flex align-center justify-start slot timeEntry"
+                                                class="d-inline-flex align-center justify-start slotHeader timeEntry"
                                                 :key="`${hour}-${min}`"
                                             >
                                                 {{ showHour(hour, min) }}
@@ -111,6 +116,7 @@
                                             <div
                                                 class="d-inline-flex align-center justify-center slot border"
                                                 :class="setBorder(n)"
+                                                v-bind:style="styleData"
                                                 :key="n"
                                                 :id="`day-${machine.name}-${n}`"
                                                 @drop.self="onDrop(n, $event)"
@@ -199,7 +205,7 @@
                     <v-form
                         ref="filterForm"
                         v-model="filterValid"
-                        lazy-validation=""
+                        lazy-validation
                     >
                         <v-container grid-list-lg>
                             <v-layout>
@@ -256,7 +262,9 @@
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="sbdBlackGrey pr-3 pl-1">
-                    <v-btn flat large color="sbdYellow">Reset Filters</v-btn>
+                    <v-btn flat large color="sbdYellow" @click="reset"
+                        >Reset Filters</v-btn
+                    >
                     <v-spacer></v-spacer>
                     <v-btn
                         large
@@ -346,6 +354,9 @@ export default {
         filter: {},
         settingsDialog: false,
         settings: {},
+        appearance: {
+            size: 'medium'
+        },
         machines: [
             {
                 name: 'Brushless Drill',
@@ -798,7 +809,13 @@ export default {
         viewBy: ['4 Hour', '8 Hour', '12 Hour', '24 Hours'],
         rows: ['S', 'M', 'L'],
         times: ['12 Hour', '24 Hour'],
-        items: ['Stub 1', 'Stub 2', 'Stub 3']
+        items: ['Stub 1', 'Stub 2', 'Stub 3'],
+        styleData: {
+            width: '175px',
+            height: '175px',
+            minWidth: '175px',
+            maxWidth: '175px'
+        }
     }),
     components: {
         Splitpanes
@@ -920,6 +937,19 @@ export default {
                     .subtract(1, 'day')
                     .format('MM/DD/YY');
             }
+        },
+        reset(form) {
+            this.$refs[form].reset();
+        },
+        setSize(val) {
+            console.log('setSize');
+            if (val === 'small') {
+                console.log('a');
+                this.styleData.height = '50px';
+                this.styleData.width = '50px';
+                this.styleData.minWidth = '50px';
+                this.styleData.maxWidth = '50px';
+            }
         }
     }
 };
@@ -955,13 +985,36 @@ export default {
 .border-dashed-left {
     border-left: 1px dashed white;
 }
-.slot {
+.slotHeader {
     display: inline-block;
     width: 75px;
     min-width: 75px;
     height: 75px;
     box-sizing: border-box;
     text-align: center;
+}
+.slot {
+    display: inline-block;
+    /*width: 75px;*/
+    /*min-width: 75px;*/
+    /*height: 75px;*/
+    box-sizing: border-box;
+    text-align: center;
+}
+.small-size {
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+}
+.medium-size {
+    width: 75px;
+    min-width: 75px;
+    height: 75px;
+}
+.large-size {
+    width: 100px;
+    min-width: 100px;
+    height: 100px;
 }
 .machine-title {
     height: 75px;
