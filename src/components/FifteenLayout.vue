@@ -8,9 +8,10 @@
                     @click="filterDialog = !filterDialog"
                     >filter_list</v-icon
                 >
-                <v-icon large @click="settingsDialog = !settingsDialog"
+                <v-icon large @click="settingsDialog = !settingsDialog" class="mr-3"
                     >tune</v-icon
                 >
+                <v-icon large>insert_chart_outlined</v-icon>
             </v-toolbar-items>
             <v-spacer></v-spacer>
             <v-icon left large @click="changeDate('down')"
