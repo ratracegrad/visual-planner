@@ -24,7 +24,6 @@
             <v-icon right large @click="changeDate('up')"
                 >keyboard_arrow_right</v-icon
             >
-            {{ appearance }}
             <v-spacer></v-spacer>
             <v-btn @click="updateStyle">Small</v-btn>
             <v-btn @click="updateStyle2">Medium</v-btn>
@@ -271,48 +270,45 @@
                 <v-card-text class="sbdBlackGrey">
                     <v-container grid-list-md mt-0 pt-0>
                         <v-layout align-center>
-                            <v-flex xs3>Time:</v-flex>
+                            <v-flex xs3 class="subheading">Time:</v-flex>
                             <v-flex xs9>
-                                <v-radio-group row v-model="appearance.time">
+                                <v-radio-group
+                                    row
+                                    v-model="dialogAppearance.time"
+                                >
                                     <v-radio
                                         v-for="(time, $timeIndex) in times"
                                         :key="$timeIndex"
                                         :label="time.name"
                                         :value="time.value"
+                                        color="sbdYellow"
                                     ></v-radio>
                                 </v-radio-group>
                             </v-flex>
                         </v-layout>
-                        <v-layout mb-5>
-                            <v-flex xs3>View By:</v-flex>
+                        <v-layout align-center>
+                            <v-flex xs3 class="subheading">View By:</v-flex>
                             <v-flex xs9>
-                                <vue-slider
-                                    v-model="appearance.viewBy"
-                                    :data="viewBy"
-                                    :marks="true"
-                                ></vue-slider>
+                                <v-slider
+                                    :tick-labels="viewBy"
+                                    :max="viewBy.length - 1"
+                                    v-model="dialogAppearance.viewBy"
+                                    always-dirty
+                                >
+                                </v-slider>
                             </v-flex>
                         </v-layout>
 
-                        <v-layout mb-5>
-                            <v-slider
-                                    v-model="appearance.slider"
-                                    :tick-labels=="times"
-                                    :max="3"
-                                    step="1"
-                                    ticks="always"
-                                    tick-size="2"
-                            ></v-slider>
-                        </v-layout>
-
-                        <v-layout>
-                            <v-flex xs3>Rows:</v-flex>
+                        <v-layout align-center>
+                            <v-flex xs3 class="subheading">Rows:</v-flex>
                             <v-flex xs9>
-                                <vue-slider
-                                    v-model="appearance.rows"
-                                    :data="rows"
-                                    :marks="true"
-                                ></vue-slider>
+                                <v-slider
+                                    :tick-labels="rows"
+                                    :max="rows.length"
+                                    v-model="dialogAppearance.rows"
+                                    always-dirty
+                                >
+                                </v-slider>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -342,6 +338,7 @@ import moment from 'moment';
 export default {
     name: 'FifteenLayout',
     data: () => ({
+        slider: null,
         show12: false,
         dateShown: null,
         filterDialog: false,
@@ -350,13 +347,11 @@ export default {
         settingsDialog: false,
         appearance: {
             time: 24,
-            viewBy: '30 Min',
-            rows: 'M',
-            slider: null
+            viewBy: 0,
+            rows: 1
         },
-        ticksLabels: [
-            { name: ''}
-        ],
+        dialogAppearance: {},
+        ticksLabels: [{ name: '' }],
         machines: [
             {
                 name: 'Brushless Drill',
@@ -808,7 +803,6 @@ export default {
         ],
         viewBy: ['30 Min', '2 Hours', '4 Hours', '6 Hours'],
         rows: ['S', 'M', 'L'],
-        // times: ['12 Hour', '24 Hour'],
         times: [{ name: '12 Hour', value: 12 }, { name: '24 Hour', value: 24 }],
         items: ['Stub 1', 'Stub 2', 'Stub 3'],
         slotStyle: {
@@ -823,33 +817,38 @@ export default {
     // components: {
     //     Splitpanes
     // },
-    watch: {
-        'appearance.rows'(val) {
-            if (val === 'S') {
-                this.slotStyle.width = '50px';
-                this.slotStyle.height = '50px';
-                this.slotStyle.minWidth = '50px';
-                this.leftSlotStyle.height = '50px';
-                this.leftSlotStyle.lineHeight = '50px';
-            } else if (val === 'L') {
-                this.slotStyle.width = '100px';
-                this.slotStyle.height = '100px';
-                this.slotStyle.minWidth = '100px';
-                this.leftSlotStyle.height = '100px';
-                this.leftSlotStyle.lineHeight = '100px';
-            } else { // medium is the default so use this
-                this.slotStyle.width = '75px';
-                this.slotStyle.height = '75px';
-                this.slotStyle.minWidth = '75px';
-                this.leftSlotStyle.height = '75x';
-                this.leftSlotStyle.lineHeight = '75px';
-            }
-        }
-    },
+    // watch: {
+    //     'appearance.rows'(val) {
+    //         if (val === 'S') {
+    //             this.slotStyle.width = '50px';
+    //             this.slotStyle.height = '50px';
+    //             this.slotStyle.minWidth = '50px';
+    //             this.leftSlotStyle.height = '50px';
+    //             this.leftSlotStyle.lineHeight = '50px';
+    //         } else if (val === 'L') {
+    //             this.slotStyle.width = '100px';
+    //             this.slotStyle.height = '100px';
+    //             this.slotStyle.minWidth = '100px';
+    //             this.leftSlotStyle.height = '100px';
+    //             this.leftSlotStyle.lineHeight = '100px';
+    //         } else {
+    //             // medium is the default so use this
+    //             this.slotStyle.width = '75px';
+    //             this.slotStyle.height = '75px';
+    //             this.slotStyle.minWidth = '75px';
+    //             this.leftSlotStyle.height = '75x';
+    //             this.leftSlotStyle.lineHeight = '75px';
+    //         }
+    //     }
+    // },
     mounted() {
         this.dateShown = moment().format('MM/DD/YY');
     },
     methods: {
+        season(val) {
+            console.log(val);
+            return this.times.value;
+        },
         updateStyle() {
             this.slotStyle.width = '50px';
             this.slotStyle.height = '50px';
