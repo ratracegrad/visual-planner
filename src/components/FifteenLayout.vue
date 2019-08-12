@@ -8,10 +8,7 @@
                     @click="filterDialog = !filterDialog"
                     >filter_list</v-icon
                 >
-                <v-icon
-                    large
-                    @click="settingsDialog = !settingsDialog"
-                    class="mr-3"
+                <v-icon large @click="appearanceShowDialog" class="mr-3"
                     >tune</v-icon
                 >
                 <v-icon large>insert_chart_outlined</v-icon>
@@ -80,7 +77,6 @@
                         >
                             <v-layout row align-center style="height: 50px;">
                                 <template v-for="hour in 48">
-                                    <!--                                    <template v-for="min in 2">-->
                                     <div
                                         class="d-inline-flex align-center justify-start slotHeader timeEntry"
                                         :style="headerStyle"
@@ -88,7 +84,6 @@
                                     >
                                         {{ showHour(hour) }}
                                     </div>
-                                    <!--                                    </template>-->
                                 </template>
                             </v-layout>
 
@@ -158,90 +153,166 @@
             </v-container>
         </span>
 
-        <v-dialog v-model="filterDialog" max-width="500" persistent>
+        <!--        <v-dialog v-model="filterDialog" max-width="500" persistent>-->
+        <!--            <v-card>-->
+        <!--                <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">-->
+        <!--                    <v-spacer></v-spacer>-->
+        <!--                    <span class="headline">Work Order Filters</span>-->
+        <!--                    <v-spacer></v-spacer>-->
+        <!--                </v-card-title>-->
+        <!--                <v-card-text class="sbdBlackGrey">-->
+        <!--                    <v-form-->
+        <!--                        ref="filterForm"-->
+        <!--                        v-model="filterValid"-->
+        <!--                        lazy-validation-->
+        <!--                    >-->
+        <!--                        <v-container grid-list-lg>-->
+        <!--                            <v-layout>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.searchBy"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Search By"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.department"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Department"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                            </v-layout>-->
+        <!--                            <v-layout>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.tool"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Select a Tool"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.material"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Select a Material"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                            </v-layout>-->
+
+        <!--                            <v-layout>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.startDate"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Select a Start Date"-->
+        <!--                                        color="black"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                                <v-flex xs6>-->
+        <!--                                    <v-combobox-->
+        <!--                                        v-model="filter.endDate"-->
+        <!--                                        :items="items"-->
+        <!--                                        label="Select an End Date"-->
+        <!--                                    ></v-combobox>-->
+        <!--                                </v-flex>-->
+        <!--                            </v-layout>-->
+        <!--                        </v-container>-->
+        <!--                    </v-form>-->
+        <!--                </v-card-text>-->
+        <!--                <v-card-actions class="sbdBlackGrey pr-3 pl-1">-->
+        <!--                    <v-btn flat large color="sbdYellow" @click="reset"-->
+        <!--                        >Reset Filters</v-btn-->
+        <!--                    >-->
+        <!--                    <v-spacer></v-spacer>-->
+        <!--                    <v-btn-->
+        <!--                        large-->
+        <!--                        outline-->
+        <!--                        color="sbdLightGrey"-->
+        <!--                        @click="filterDialog = false"-->
+        <!--                        >Cancel</v-btn-->
+        <!--                    >-->
+        <!--                    <v-btn large light color="sbdYellow" @click="handleFilterDialog">Apply</v-btn>-->
+        <!--                </v-card-actions>-->
+        <!--            </v-card>-->
+        <!--        </v-dialog>-->
+
+        <v-dialog v-model="showAppearanceDialog" width="500">
             <v-card>
                 <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
                     <v-spacer></v-spacer>
-                    <span class="headline">Work Order Filters</span>
+                    <span class="headline">APPEARANCE</span>
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-card-text class="sbdBlackGrey">
-                    <v-form
-                        ref="filterForm"
-                        v-model="filterValid"
-                        lazy-validation
-                    >
-                        <v-container grid-list-lg>
-                            <v-layout>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.searchBy"
-                                        :items="items"
-                                        label="Search By"
-                                    ></v-combobox>
-                                </v-flex>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.department"
-                                        :items="items"
-                                        label="Department"
-                                    ></v-combobox>
-                                </v-flex>
-                            </v-layout>
-                            <v-layout>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.tool"
-                                        :items="items"
-                                        label="Select a Tool"
-                                    ></v-combobox>
-                                </v-flex>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.material"
-                                        :items="items"
-                                        label="Select a Material"
-                                    ></v-combobox>
-                                </v-flex>
-                            </v-layout>
+                    <v-container grid-list-md mt-0 pt-0>
+                        <v-layout align-center>
+                            <v-flex xs3 class="subheading">Time:</v-flex>
+                            <v-flex xs9>
+                                <v-radio-group
+                                    row
+                                    v-model="appearanceDialog.time"
+                                >
+                                    <v-radio
+                                        v-for="(time,
+                                        $timeIndex) in timesComputed"
+                                        :key="$timeIndex"
+                                        :label="time.name"
+                                        :value="time.value"
+                                        color="sbdYellow"
+                                    ></v-radio>
+                                </v-radio-group>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout align-center>
+                            <v-flex xs3 class="subheading">View By:</v-flex>
+                            <v-flex xs9>
+                                <v-slider
+                                    :tick-labels="viewBy"
+                                    :max="viewBy.length - 1"
+                                    v-model="appearanceDialog.viewBy"
+                                    always-dirty
+                                >
+                                </v-slider>
+                            </v-flex>
+                        </v-layout>
 
-                            <v-layout>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.startDate"
-                                        :items="items"
-                                        label="Select a Start Date"
-                                        color="black"
-                                    ></v-combobox>
-                                </v-flex>
-                                <v-flex xs6>
-                                    <v-combobox
-                                        v-model="filter.endDate"
-                                        :items="items"
-                                        label="Select an End Date"
-                                    ></v-combobox>
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-form>
+                        <v-layout align-center>
+                            <v-flex xs3 class="subheading">Rows:</v-flex>
+                            <v-flex xs9>
+                                <v-slider
+                                    :tick-labels="rowsComputed"
+                                    :max="rowsComputed.length - 1"
+                                    v-model="appearanceDialog.rows"
+                                    always-dirty
+                                >
+                                </v-slider>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
                 </v-card-text>
                 <v-card-actions class="sbdBlackGrey pr-3 pl-1">
-                    <v-btn flat large color="sbdYellow" @click="reset"
-                        >Reset Filters</v-btn
+                    <v-btn flat large color="sbdYellow" @click="appearanceReset"
+                        >Reset Appearance</v-btn
                     >
                     <v-spacer></v-spacer>
                     <v-btn
                         large
                         outline
                         color="sbdLightGrey"
-                        @click="filterDialog = false"
+                        @click="showAppearanceDialog = false"
                         >Cancel</v-btn
                     >
-                    <v-btn large light color="sbdYellow">Apply</v-btn>
+                    <v-btn
+                        large
+                        light
+                        color="sbdYellow"
+                        @click="appearanceApply"
+                        >Apply</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
         <v-dialog v-model="settingsDialog" width="500">
             <v-card>
                 <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
@@ -325,7 +396,13 @@ export default {
         filterValid: false,
         filter: {},
         settingsDialog: false,
+        showAppearanceDialog: false,
         appearance: {
+            time: 24,
+            viewBy: 0,
+            rows: 1
+        },
+        appearanceDialog: {
             time: 24,
             viewBy: 0,
             rows: 1
@@ -785,6 +862,7 @@ export default {
         rows: ['S', 'M', 'L'],
         times: [{ name: '12 Hour', value: 12 }, { name: '24 Hour', value: 24 }],
         items: ['Stub 1', 'Stub 2', 'Stub 3'],
+        plannerSizes: ['75px', '125px', '175px'],
         slotStyle: {
             width: '75px',
             height: '75px',
@@ -792,14 +870,29 @@ export default {
         },
         leftSlotStyle: {
             height: '75px'
+        },
+        headerStyle: {
+            width: null,
+            height: '50px',
+            minWidth: null
         }
     }),
+    computed: {
+        timesComputed() {
+            return [
+                { name: '12 Hour', value: 12 },
+                { name: '24 Hour', value: 24 }
+            ];
+        },
+        rowsComputed() {
+            return ['Small', 'Medium', 'Large'];
+        }
+    },
     mounted() {
         this.dateShown = moment().format('MM/DD/YY');
     },
     methods: {
-        season(val) {
-            console.log(val);
+        season() {
             return this.times.value;
         },
         updateStyle() {
@@ -852,29 +945,6 @@ export default {
                     return `${hour / 2}`;
                 }
             }
-            //
-            // if (min === 2) {
-            //     return '';
-            // }
-            // hour = hour - 1;
-            // min = +min;
-            // if (this.show12) {
-            //     if (hour === 0 && min === 1) {
-            //         return `12 AM`;
-            //     } else if (hour < 12 && min === 1) {
-            //         return `${hour} AM`;
-            //     } else if (hour === 12) {
-            //         return `${hour} PM`;
-            //     }
-            //     return `${hour - 12} PM`;
-            // } else {
-            //     if (hour === 0) {
-            //         return `00 AM`;
-            //     } else if (hour < 12) {
-            //         return `${hour} AM`;
-            //     }
-            //     return `${hour} PM`;
-            // }
         },
         getStyle(machine) {
             let len = this.slotStyle.width.substring(
@@ -975,6 +1045,30 @@ export default {
                 this.styleData.minWidth = '50px';
                 this.styleData.maxWidth = '50px';
             }
+        },
+        appearanceShowDialog() {
+            console.log('a');
+            this.appearanceDialog = Object.assign({}, this.appearance);
+            this.showAppearanceDialog = !this.showAppearanceDialog;
+        },
+        appearanceReset() {
+            this.appearanceDialog = Object.assign({}, this.appearance);
+        },
+        appearanceApply() {
+            this.appearance = Object.assign({}, this.appearanceDialog);
+            this.resizePlanner(this.appearance.rows);
+            this.show12 = this.appearance.time === 12;
+
+            this.showAppearanceDialog = false;
+        },
+        resizePlanner(size) {
+            this.slotStyle.width = this.plannerSizes[size];
+            this.slotStyle.height = this.plannerSizes[size];
+            this.slotStyle.minWidth = this.plannerSizes[size];
+            this.leftSlotStyle.height = this.plannerSizes[size];
+            this.leftSlotStyle.lineHeight = this.plannerSizes[size];
+            this.headerStyle.width = this.plannerSizes[size];
+            this.headerStyle.minWidth = this.plannerSizes[size];
         }
     }
 };
