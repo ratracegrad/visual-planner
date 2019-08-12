@@ -25,11 +25,10 @@
                 >keyboard_arrow_right</v-icon
             >
             <v-spacer></v-spacer>
-            <v-btn @click="updateStyle">Small</v-btn>
-            <v-btn @click="updateStyle2">Medium</v-btn>
-            <v-btn @click="updateStyle3">Large</v-btn>
+            <!--            <v-btn @click="updateStyle">Small</v-btn>-->
+            <!--            <v-btn @click="updateStyle2">Medium</v-btn>-->
+            <!--            <v-btn @click="updateStyle3">Large</v-btn>-->
         </v-toolbar>
-        <!--        <splitpanes horizontal="horizontal" class="default-theme">-->
         <span>
             <v-container fluid>
                 <v-layout row style="overflow-y: scroll;">
@@ -80,15 +79,16 @@
                             id="scrollContainer"
                         >
                             <v-layout row align-center style="height: 50px;">
-                                <template v-for="hour in 24">
-                                    <template v-for="min in 2">
-                                        <div
-                                            class="d-inline-flex align-center justify-start slotHeader timeEntry"
-                                            :key="`${hour}-${min}`"
-                                        >
-                                            {{ showHour(hour, min) }}
-                                        </div>
-                                    </template>
+                                <template v-for="hour in 48">
+                                    <!--                                    <template v-for="min in 2">-->
+                                    <div
+                                        class="d-inline-flex align-center justify-start slotHeader timeEntry"
+                                        :style="headerStyle"
+                                        :key="`${hour}-${hour}`"
+                                    >
+                                        {{ showHour(hour) }}
+                                    </div>
+                                    <!--                                    </template>-->
                                 </template>
                             </v-layout>
 
@@ -157,24 +157,6 @@
                 </v-layout>
             </v-container>
         </span>
-        <!--        <span>-->
-        <!--            <v-container fluid fill-height class="noScrollbar">-->
-        <!--                <v-layout row wrap class="scroll-box-grid px-2">-->
-        <!--                    <v-flex-->
-        <!--                        v-for="(machine, $machineIndex) in machines"-->
-        <!--                        :key="$machineIndex"-->
-        <!--                        class="line-grid-wrap"-->
-        <!--                    >-->
-        <!--                        <span-->
-        <!--                            class="subheading white&#45;&#45;text"-->
-        <!--                            style="height: 30px;"-->
-        <!--                            >{{ machine.name }}</span-->
-        <!--                        >-->
-        <!--                    </v-flex>-->
-        <!--                </v-layout>-->
-        <!--            </v-container>-->
-        <!--        </span>-->
-        <!--        </splitpanes>-->
 
         <v-dialog v-model="filterDialog" max-width="500" persistent>
             <v-card>
@@ -331,8 +313,6 @@
 </template>
 
 <script>
-// import Splitpanes from 'splitpanes';
-// import 'splitpanes/dist/splitpanes.css';
 import moment from 'moment';
 
 export default {
@@ -814,33 +794,6 @@ export default {
             height: '75px'
         }
     }),
-    // components: {
-    //     Splitpanes
-    // },
-    // watch: {
-    //     'appearance.rows'(val) {
-    //         if (val === 'S') {
-    //             this.slotStyle.width = '50px';
-    //             this.slotStyle.height = '50px';
-    //             this.slotStyle.minWidth = '50px';
-    //             this.leftSlotStyle.height = '50px';
-    //             this.leftSlotStyle.lineHeight = '50px';
-    //         } else if (val === 'L') {
-    //             this.slotStyle.width = '100px';
-    //             this.slotStyle.height = '100px';
-    //             this.slotStyle.minWidth = '100px';
-    //             this.leftSlotStyle.height = '100px';
-    //             this.leftSlotStyle.lineHeight = '100px';
-    //         } else {
-    //             // medium is the default so use this
-    //             this.slotStyle.width = '75px';
-    //             this.slotStyle.height = '75px';
-    //             this.slotStyle.minWidth = '75px';
-    //             this.leftSlotStyle.height = '75x';
-    //             this.leftSlotStyle.lineHeight = '75px';
-    //         }
-    //     }
-    // },
     mounted() {
         this.dateShown = moment().format('MM/DD/YY');
     },
@@ -870,35 +823,58 @@ export default {
             this.leftSlotStyle.height = '100px';
             this.leftSlotStyle.lineHeight = '100px';
         },
-        showHour(hour, min) {
-            if (min === 2) {
-                return '';
-            }
-            let minConvertor = {
-                '1': '',
-                '2': '',
-                '3': '',
-                '4': ''
-            };
+        showHour(hour) {
             hour = hour - 1;
-            min = +min;
             if (this.show12) {
-                if (hour === 0 && min === 1) {
-                    return `12AM`;
-                } else if (hour < 12 && min === 1) {
-                    return `${hour}AM`;
+                if (hour === 0) {
+                    return `12 AM`;
+                } else if (hour === 47) {
+                    return '';
+                } else if (hour % 2 === 1) {
+                    return '';
+                } else if (hour < 24) {
+                    return `${hour / 2} AM`;
                 } else if (hour === 12) {
-                    return `${hour}PM`;
+                    return `${hour} PM`;
+                } else {
+                    return `${hour / 2 - 12} PM`;
                 }
-                return `${hour - 12}PM`;
             } else {
                 if (hour === 0) {
-                    return `00:${minConvertor[min]} AM`;
-                } else if (hour < 12) {
-                    return `${hour}:${minConvertor[min]} AM`;
+                    return `00`;
+                } else if (hour === 47) {
+                    return '';
+                } else if (hour % 2 === 1) {
+                    return '';
+                } else if (hour < 24) {
+                    return `${hour / 2}`;
+                } else {
+                    return `${hour / 2}`;
                 }
-                return `${hour}:${minConvertor[min]} PM`;
             }
+            //
+            // if (min === 2) {
+            //     return '';
+            // }
+            // hour = hour - 1;
+            // min = +min;
+            // if (this.show12) {
+            //     if (hour === 0 && min === 1) {
+            //         return `12 AM`;
+            //     } else if (hour < 12 && min === 1) {
+            //         return `${hour} AM`;
+            //     } else if (hour === 12) {
+            //         return `${hour} PM`;
+            //     }
+            //     return `${hour - 12} PM`;
+            // } else {
+            //     if (hour === 0) {
+            //         return `00 AM`;
+            //     } else if (hour < 12) {
+            //         return `${hour} AM`;
+            //     }
+            //     return `${hour} PM`;
+            // }
         },
         getStyle(machine) {
             let len = this.slotStyle.width.substring(
@@ -919,14 +895,17 @@ export default {
             };
         },
         setBorder(n) {
+            n = n - 1;
             if (n === 0) {
                 return ['border-solid-left', 'border-dashed-right'];
-            } else if (n % 4 === 0) {
-                return ['border-solid-right', 'border-dashed-left'];
-            } else if (n % 4 === 1) {
-                return ['border-solid-left', 'border-dashed-right'];
+            } else if (n === 47) {
+                return ['border-solid-right'];
+            } else if (n % 2 === 0) {
+                return ['border-solid-double-left', 'border-dashed-right'];
+            } else if (n % 2 === 1) {
+                return '';
             } else {
-                return ['border-dashed-left', 'border-dashed-right'];
+                return '';
             }
         },
         onDrop(n, event) {
@@ -1016,8 +995,8 @@ export default {
     margin: 0 0 10px;
 }
 .border {
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
+    border-top: 1px solid #252525;
+    border-bottom: 1px solid #252525;
 }
 .border-solid-right {
     border-right: 1px solid white;
@@ -1026,7 +1005,10 @@ export default {
     border-left: 1px solid white;
 }
 .border-dashed-right {
-    border-right: 1px dashed white;
+    background-image: linear-gradient(white 33%, rgba(255, 255, 255, 0) 0%);
+    background-position: right;
+    background-size: 1px 17px;
+    background-repeat: repeat-y;
 }
 .border-dashed-left {
     border-left: 1px dashed white;
@@ -1041,9 +1023,6 @@ export default {
 }
 .slot {
     display: inline-block;
-    /*width: 75px;*/
-    /*min-width: 75px;*/
-    /*height: 75px;*/
     box-sizing: border-box;
     text-align: center;
 }
@@ -1071,8 +1050,6 @@ export default {
 }
 .entry {
     position: absolute;
-    /*top: 3px;*/
-    /*height: 69px;*/
     display: flex;
     flex-direction: column;
     justify-content: center;
