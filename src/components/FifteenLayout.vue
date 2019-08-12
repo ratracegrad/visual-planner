@@ -22,9 +22,6 @@
                 >keyboard_arrow_right</v-icon
             >
             <v-spacer></v-spacer>
-            <!--            <v-btn @click="updateStyle">Small</v-btn>-->
-            <!--            <v-btn @click="updateStyle2">Medium</v-btn>-->
-            <!--            <v-btn @click="updateStyle3">Large</v-btn>-->
         </v-toolbar>
         <span>
             <v-container fluid>
@@ -895,27 +892,6 @@ export default {
         season() {
             return this.times.value;
         },
-        updateStyle() {
-            this.slotStyle.width = '50px';
-            this.slotStyle.height = '50px';
-            this.slotStyle.minWidth = '50px';
-            this.leftSlotStyle.height = '50px';
-            this.leftSlotStyle.lineHeight = '50px';
-        },
-        updateStyle2() {
-            this.slotStyle.width = '75px';
-            this.slotStyle.height = '75px';
-            this.slotStyle.minWidth = '75px';
-            this.leftSlotStyle.height = '75x';
-            this.leftSlotStyle.lineHeight = '75px';
-        },
-        updateStyle3() {
-            this.slotStyle.width = '100px';
-            this.slotStyle.height = '100px';
-            this.slotStyle.minWidth = '100px';
-            this.leftSlotStyle.height = '100px';
-            this.leftSlotStyle.lineHeight = '100px';
-        },
         showHour(hour) {
             hour = hour - 1;
             if (this.show12) {
@@ -1021,9 +997,6 @@ export default {
         onMouseUp() {
             this._dragElement = null;
         },
-        onMouseOver(event) {
-            console.log('onMouseOver', event);
-        },
         changeDate(direction) {
             if (direction === 'up') {
                 this.dateShown = moment(this.dateShown)
@@ -1047,7 +1020,6 @@ export default {
             }
         },
         appearanceShowDialog() {
-            console.log('a');
             this.appearanceDialog = Object.assign({}, this.appearance);
             this.showAppearanceDialog = !this.showAppearanceDialog;
         },
