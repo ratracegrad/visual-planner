@@ -10,6 +10,10 @@ Here is a screenshot of the application running:
 
 ![Visual Planner Screenshot](/screenshots/visualPlanner.png?raw=true "Visual Planner")
 
+## Live Demo
+
+[You may view this application live here](https://visual-planner-566fb.firebaseapp.com/) 
+
 ## Project setup
 ```
 npm install
