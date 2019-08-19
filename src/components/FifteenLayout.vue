@@ -5,7 +5,7 @@
                 <v-icon
                     large
                     class=" ml-5 mr-3"
-                    @click="showAppearanceDialog = !showAppearanceDialog"
+                    @click="showFilterDialog = !showFilterDialog"
                     >filter_list</v-icon
                 >
                 <v-icon large @click="appearanceShowDialog" class="mr-3"
@@ -55,83 +55,90 @@
             </v-container>
         </span>
 
-        <v-dialog v-model="showAppearanceDialog" width="500">
+        <v-dialog v-model="showFilterDialog" width="500">
             <v-card>
                 <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
                     <v-spacer></v-spacer>
-                    <span class="headline">APPEARANCE</span>
+                    <span class="headline">Filters</span>
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-card-text class="sbdBlackGrey">
-                    <v-container grid-list-md mt-0 pt-0>
-                        <v-layout align-center>
-                            <v-flex xs3 class="subheading">Time:</v-flex>
-                            <v-flex xs9>
-                                <v-radio-group
-                                    row
-                                    v-model="appearanceDialog.time"
-                                >
-                                    <v-radio
-                                        v-for="(time,
-                                        $timeIndex) in timesComputed"
-                                        :key="$timeIndex"
-                                        :label="time.name"
-                                        :value="time.value"
-                                        color="sbdYellow"
-                                    ></v-radio>
-                                </v-radio-group>
-                            </v-flex>
-                        </v-layout>
-                        <v-layout align-center>
-                            <v-flex xs3 class="subheading">View By:</v-flex>
-                            <v-flex xs9>
-                                <v-slider
-                                    :tick-labels="viewBy"
-                                    :max="viewBy.length - 1"
-                                    v-model="appearanceDialog.viewBy"
-                                    always-dirty
-                                >
-                                </v-slider>
-                            </v-flex>
-                        </v-layout>
+                    <v-form
+                        ref="filterForm"
+                        v-model="filterValid"
+                        lazy-validation
+                    >
+                        <v-container grid-list-lg>
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.searchBy"
+                                        :items="items"
+                                        label="Search By"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.department"
+                                        :items="items"
+                                        label="Department"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.tool"
+                                        :items="items"
+                                        label="Select Tool"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.material"
+                                        :items="items"
+                                        label="Select Material"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
 
-                        <v-layout align-center>
-                            <v-flex xs3 class="subheading">Rows:</v-flex>
-                            <v-flex xs9>
-                                <v-slider
-                                    :tick-labels="rowsComputed"
-                                    :max="rowsComputed.length - 1"
-                                    v-model="appearanceDialog.rows"
-                                    always-dirty
-                                >
-                                </v-slider>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
+                            <v-layout>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.startDate"
+                                        :items="items"
+                                        label="Start Date"
+                                        color="black"
+                                    ></v-combobox>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <v-combobox
+                                        v-model="filter.endDate"
+                                        :items="items"
+                                        label="End Date"
+                                    ></v-combobox>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-form>
                 </v-card-text>
                 <v-card-actions class="sbdBlackGrey pr-3 pl-1">
-                    <v-btn flat large color="sbdYellow" @click="appearanceReset"
-                        >Reset Appearance</v-btn
+                    <v-btn flat large color="sbdYellow" @click="reset"
+                        >Reset Filters</v-btn
                     >
                     <v-spacer></v-spacer>
                     <v-btn
                         large
                         outline
                         color="sbdLightGrey"
-                        @click="showAppearanceDialog = false"
+                        @click="showFilterDialog = false"
                         >Cancel</v-btn
                     >
-                    <v-btn
-                        large
-                        light
-                        color="sbdYellow"
-                        @click="appearanceApply"
-                        >Apply</v-btn
-                    >
+                    <v-btn large light color="sbdYellow">Apply</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="showSettingsDialog" width="500">
+        <v-dialog v-model="showAppearanceDialog" width="500">
             <v-card>
                 <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
                     <v-spacer></v-spacer>
@@ -191,7 +198,7 @@
                         large
                         outline
                         color="sbdLightGrey"
-                        @click="settingsDialog = false"
+                        @click="showAppearanceDialog = false"
                         >Cancel</v-btn
                     >
                     <v-btn large light color="sbdYellow">Apply</v-btn>
@@ -218,8 +225,8 @@ export default {
         dateShown: null,
         filterDialog: false,
         settingsDialog: false,
-        showSettingsDialog: false,
         showAppearanceDialog: false,
+        showFilterDialog: false,
         appearance: {
             time: 24,
             viewBy: 0,
@@ -231,6 +238,8 @@ export default {
             rows: 1
         },
         dialogAppearance: {},
+        filterValid: false,
+        filter: {},
         machines: machines,
         viewBy: ['30 Min', '2 Hours', '4 Hours', '6 Hours'],
         rows: ['S', 'M', 'L'],
@@ -267,49 +276,6 @@ export default {
         this.dateShown = moment().format('MM/DD/YY');
     },
     methods: {
-        onDrop(n, event) {
-            n = n - 1;
-            event.target.classList.remove('dragHover'); // remove highlight on day square
-            const data = event.dataTransfer.getData('text');
-            const item = document.getElementById(data);
-            item.style.left = `${n * 75 + 1}px`;
-            document.getElementById(data).style['pointer-events'] = 'unset';
-        },
-        onDragOver(n, event) {
-            event.preventDefault();
-        },
-        onDragEnter(event) {
-            event.target.classList.add('dragHover');
-        },
-        onDragLeave(event) {
-            event.target.classList.remove('dragHover');
-        },
-        onDragStart(item, event) {
-            event.dataTransfer.setData('text', event.target.id);
-            let crt = event.srcElement.cloneNode(true);
-            crt.style.left = 'unset';
-            crt.style.right = 'unset';
-            crt.style.top = 'unset';
-            crt.id = 'something';
-            document.body.appendChild(crt);
-            event.dataTransfer.setDragImage(crt, 0, 0);
-            setTimeout(function() {
-                document.getElementById(event.target.id).style[
-                    'pointer-events'
-                ] = 'none';
-            }, 0);
-        },
-        onMouseDown(entry, event) {
-            this._startX = event.clientX;
-            this._startY = event.clientY;
-            this._offsetX = document.getElementById(entry).offsetLeft;
-            this._offsetY = document.getElementById(entry).offsetTop;
-            this._viewportWidth = document.documentElement.clientWidth;
-            this._dragElement = document.getElementById(entry);
-        },
-        onMouseUp() {
-            this._dragElement = null;
-        },
         changeDate(direction) {
             if (direction === 'up') {
                 this.dateShown = moment(this.dateShown)
