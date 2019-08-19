@@ -49,21 +49,8 @@ export default {
                 return '';
             }
         },
-        moveJobEntry({ jobId, fromMachine }) {
-            // get item to move
-            let machineIndex = this.machines.findIndex(
-                machine => machine.id === fromMachine
-            );
-            let jobIndex = this.machines[machineIndex].data.findIndex(
-                entry => entry.id === jobId
-            );
-            let jobToMove = this.machines[machineIndex].data.splice(
-                jobIndex,
-                1
-            )[0];
-
-            // add to new machine
-            this.machine.data.push(jobToMove);
+        moveJobEntry(payload) {
+            this.$store.commit('MOVE_JOB', payload);
         }
     }
 };

@@ -521,6 +521,27 @@ export default new Vuex.Store({
             }
         ]
     },
-    mutations: {},
+    mutations: {
+        MOVE_JOB(state, { jobId, fromMachine, toMachine, offset }) {
+            // get job to move and update the offset
+            const jobToMove = state.machines
+                .find(machine => machine.id === fromMachine)
+                .data.find(job => job.id === jobId);
+            jobToMove.offset = offset - 1;
+
+            // remove job from current machine
+            const index = state.machines
+                .find(machine => machine.id === fromMachine)
+                .data.findIndex(job => job.id === jobId);
+            state.machines
+                .find(machine => machine.id === fromMachine)
+                .data.splice(index, 1);
+
+            // move job to new machine
+            state.machines
+                .find(machine => machine.id === +toMachine)
+                .data.push(jobToMove);
+        }
+    },
     actions: {}
 });
