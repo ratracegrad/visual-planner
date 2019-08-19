@@ -5,7 +5,7 @@
                 <v-icon
                     large
                     class=" ml-5 mr-3"
-                    @click="filterDialog = !filterDialog"
+                    @click="showAppearanceDialog = !showAppearanceDialog"
                     >filter_list</v-icon
                 >
                 <v-icon large @click="appearanceShowDialog" class="mr-3"
@@ -25,7 +25,7 @@
         </v-toolbar>
         <span>
             <v-container fluid>
-                <v-layout row style="overflow-y: scroll;">
+                <v-layout row class="scroll-vertical">
                     <v-flex xs2>
                         <v-container fluid mx-0 px-0 class="timeSlots">
                             <v-layout row align-center style="height: 50px;">
@@ -35,204 +35,25 @@
                                     </div>
                                 </v-flex>
                             </v-layout>
-                            <v-layout
-                                row
+
+                            <MachineEntry
                                 v-for="machine in machines"
                                 :key="machine.name"
-                            >
-                                <div class="subheading" :style="leftSlotStyle">
-                                    <v-icon
-                                        left
-                                        v-if="machine.status === 'up'"
-                                        color="sbdGreen"
-                                        >arrow_upward</v-icon
-                                    >
-                                    <v-icon
-                                        left
-                                        v-else-if="machine.status === 'down'"
-                                        color="sbdRed"
-                                        >arrow_downward</v-icon
-                                    >
-                                    <v-icon
-                                        left
-                                        v-else-if="
-                                            machine.status === 'maintenance'
-                                        "
-                                        color="sbdYellow"
-                                        >change_history</v-icon
-                                    >
-                                    <span>{{ machine.name }}</span>
-                                </div>
-                            </v-layout>
+                                :machine="machine"
+                                :leftSlotStyle="leftSlotStyle"
+                            ></MachineEntry>
                         </v-container>
                     </v-flex>
                     <v-flex xs10>
-                        <v-container
-                            fluid
-                            class="timeSlots"
-                            id="scrollContainer"
-                        >
-                            <v-layout row align-center style="height: 50px;">
-                                <template v-for="hour in 48">
-                                    <div
-                                        class="d-inline-flex align-center justify-start slotHeader timeEntry"
-                                        :style="headerStyle"
-                                        :key="`${hour}-${hour}`"
-                                    >
-                                        {{ showHour(hour) }}
-                                    </div>
-                                </template>
-                            </v-layout>
-
-                            <template v-for="machine in machines">
-                                <v-layout
-                                    row
-                                    :key="machine.name"
-                                    class="relative"
-                                >
-                                    <template v-for="n in 48">
-                                        <div
-                                            class="d-inline-flex align-center justify-center slot border"
-                                            :class="setBorder(n)"
-                                            :style="slotStyle"
-                                            :key="n"
-                                            :id="`day-${machine.name}-${n}`"
-                                            @drop.self="onDrop(n, $event)"
-                                            @dragover="onDragOver(n, $event)"
-                                            @dragenter="onDragEnter($event)"
-                                            @dragleave="onDragLeave($event)"
-                                        ></div>
-                                    </template>
-
-                                    <template
-                                        v-for="(entry, i) in machine.data"
-                                    >
-                                        <div
-                                            :id="`${machine.name}-${i}`"
-                                            :key="`${machine.name}-${i}`"
-                                            class="entry"
-                                            :style="getStyle(entry)"
-                                            draggable="true"
-                                            @dragstart="
-                                                onDragStart(entry, $event)
-                                            "
-                                            @mousedown="
-                                                onMouseDown(
-                                                    `${machine.name}-${i}`,
-                                                    $event
-                                                )
-                                            "
-                                            @mouseup="onMouseUp()"
-                                        >
-                                            <div>
-                                                <v-icon left color="sbdWhite"
-                                                    >trending_up</v-icon
-                                                >
-                                                <span
-                                                    class="white--text subheading font-weight-bold"
-                                                    >{{
-                                                        entry.workOrderId
-                                                    }}</span
-                                                >
-                                            </div>
-                                            <div
-                                                class="white--text subheading font-weight-bold"
-                                            >
-                                                #{{ entry.sku }}
-                                            </div>
-                                        </div>
-                                    </template>
-                                </v-layout>
-                            </template>
-                        </v-container>
+                        <GridLayout
+                            :headerStyle="headerStyle"
+                            :machines="machines"
+                            :slotStyle="slotStyle"
+                        ></GridLayout>
                     </v-flex>
                 </v-layout>
             </v-container>
         </span>
-
-        <!--        <v-dialog v-model="filterDialog" max-width="500" persistent>-->
-        <!--            <v-card>-->
-        <!--                <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">-->
-        <!--                    <v-spacer></v-spacer>-->
-        <!--                    <span class="headline">Work Order Filters</span>-->
-        <!--                    <v-spacer></v-spacer>-->
-        <!--                </v-card-title>-->
-        <!--                <v-card-text class="sbdBlackGrey">-->
-        <!--                    <v-form-->
-        <!--                        ref="filterForm"-->
-        <!--                        v-model="filterValid"-->
-        <!--                        lazy-validation-->
-        <!--                    >-->
-        <!--                        <v-container grid-list-lg>-->
-        <!--                            <v-layout>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.searchBy"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Search By"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.department"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Department"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                            </v-layout>-->
-        <!--                            <v-layout>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.tool"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Select a Tool"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.material"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Select a Material"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                            </v-layout>-->
-
-        <!--                            <v-layout>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.startDate"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Select a Start Date"-->
-        <!--                                        color="black"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                                <v-flex xs6>-->
-        <!--                                    <v-combobox-->
-        <!--                                        v-model="filter.endDate"-->
-        <!--                                        :items="items"-->
-        <!--                                        label="Select an End Date"-->
-        <!--                                    ></v-combobox>-->
-        <!--                                </v-flex>-->
-        <!--                            </v-layout>-->
-        <!--                        </v-container>-->
-        <!--                    </v-form>-->
-        <!--                </v-card-text>-->
-        <!--                <v-card-actions class="sbdBlackGrey pr-3 pl-1">-->
-        <!--                    <v-btn flat large color="sbdYellow" @click="reset"-->
-        <!--                        >Reset Filters</v-btn-->
-        <!--                    >-->
-        <!--                    <v-spacer></v-spacer>-->
-        <!--                    <v-btn-->
-        <!--                        large-->
-        <!--                        outline-->
-        <!--                        color="sbdLightGrey"-->
-        <!--                        @click="filterDialog = false"-->
-        <!--                        >Cancel</v-btn-->
-        <!--                    >-->
-        <!--                    <v-btn large light color="sbdYellow" @click="handleFilterDialog">Apply</v-btn>-->
-        <!--                </v-card-actions>-->
-        <!--            </v-card>-->
-        <!--        </v-dialog>-->
 
         <v-dialog v-model="showAppearanceDialog" width="500">
             <v-card>
@@ -310,7 +131,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="settingsDialog" width="500">
+        <v-dialog v-model="showSettingsDialog" width="500">
             <v-card>
                 <v-card-title class="sbdDarkGrey text-uppercase text-xs-center">
                     <v-spacer></v-spacer>
@@ -382,17 +203,22 @@
 
 <script>
 import moment from 'moment';
+import machines from '@/data/machines.json';
+import MachineEntry from '@/components/MachineEntry';
+import GridLayout from '@/components/GridLayout';
 
 export default {
     name: 'FifteenLayout',
+    components: {
+        MachineEntry,
+        GridLayout
+    },
     data: () => ({
-        slider: null,
         show12: false,
         dateShown: null,
         filterDialog: false,
-        filterValid: false,
-        filter: {},
         settingsDialog: false,
+        showSettingsDialog: false,
         showAppearanceDialog: false,
         appearance: {
             time: 24,
@@ -405,456 +231,7 @@ export default {
             rows: 1
         },
         dialogAppearance: {},
-        ticksLabels: [{ name: '' }],
-        machines: [
-            {
-                name: 'Brushless Drill',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: '123',
-                        sku: '04081962',
-                        status: 'green',
-                        maintenance: true,
-                        offset: 2,
-                        length: 8
-                    },
-                    {
-                        workOrderId: '222',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 24,
-                        length: 12
-                    }
-                ]
-            },
-            {
-                name: 'Sample Machine',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 16
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 25,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'Hair Dryer',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 5
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 7,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 12,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'Blue Yeti Microphone',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 2,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 6,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Lucky the Cat',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 4
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 13,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 'id42',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 18,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Nalgene Bottle',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 20
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 27,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'ultima',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: '123',
-                        sku: '04081962',
-                        status: 'green',
-                        maintenance: true,
-                        offset: 2,
-                        length: 8
-                    },
-                    {
-                        workOrderId: '222',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 24,
-                        length: 12
-                    }
-                ]
-            },
-            {
-                name: 'Computer Glasses',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 16
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 25,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'StarTech Hub',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 5
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 7,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 12,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'Samsung Tablet',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 2,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 6,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Livesavers',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 4
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 13,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 'id42',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 18,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Power Outlet',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 20
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 27,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Dasani Water',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: '123',
-                        sku: '04081962',
-                        status: 'green',
-                        maintenance: true,
-                        offset: 2,
-                        length: 8
-                    },
-                    {
-                        workOrderId: '222',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 24,
-                        length: 12
-                    }
-                ]
-            },
-            {
-                name: 'Miso Soup',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 16
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 25,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'Lalit',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 5
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 7,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 12,
-                        length: 8
-                    }
-                ]
-            },
-            {
-                name: 'Spoon',
-                status: 'up',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 2,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 6,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Soup Bowl',
-                status: 'down',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 0,
-                        length: 3
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 5,
-                        length: 4
-                    },
-                    {
-                        workOrderId: 'A472',
-                        sku: '04081962',
-                        status: 'grey',
-                        offset: 13,
-                        length: 2
-                    },
-                    {
-                        workOrderId: 'id42',
-                        sku: '04081962',
-                        status: 'red',
-                        offset: 18,
-                        length: 3
-                    }
-                ]
-            },
-            {
-                name: 'Stapler',
-                status: 'maintenance',
-                data: [
-                    {
-                        workOrderId: 123,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 1,
-                        length: 20
-                    },
-                    {
-                        workOrderId: 222,
-                        sku: '04081962',
-                        status: 'green',
-                        offset: 27,
-                        length: 3
-                    }
-                ]
-            }
-        ],
+        machines: machines,
         viewBy: ['30 Min', '2 Hours', '4 Hours', '6 Hours'],
         rows: ['S', 'M', 'L'],
         times: [{ name: '12 Hour', value: 12 }, { name: '24 Hour', value: 24 }],
@@ -866,7 +243,8 @@ export default {
             minWidth: '75px'
         },
         leftSlotStyle: {
-            height: '75px'
+            height: '75px',
+            lineHeight: '75px'
         },
         headerStyle: {
             width: null,
@@ -889,71 +267,6 @@ export default {
         this.dateShown = moment().format('MM/DD/YY');
     },
     methods: {
-        season() {
-            return this.times.value;
-        },
-        showHour(hour) {
-            hour = hour - 1;
-            if (this.show12) {
-                if (hour === 0) {
-                    return `12 AM`;
-                } else if (hour === 47) {
-                    return '';
-                } else if (hour % 2 === 1) {
-                    return '';
-                } else if (hour < 24) {
-                    return `${hour / 2} AM`;
-                } else if (hour === 12) {
-                    return `${hour} PM`;
-                } else {
-                    return `${hour / 2 - 12} PM`;
-                }
-            } else {
-                if (hour === 0) {
-                    return `00`;
-                } else if (hour === 47) {
-                    return '';
-                } else if (hour % 2 === 1) {
-                    return '';
-                } else if (hour < 24) {
-                    return `${hour / 2}`;
-                } else {
-                    return `${hour / 2}`;
-                }
-            }
-        },
-        getStyle(machine) {
-            let len = this.slotStyle.width.substring(
-                0,
-                this.slotStyle.width.length - 2
-            );
-            let height = `${len - 6}px`;
-            let left = `${machine.offset * len + 1}px`;
-            let width = `${machine.length * len - 2}px`;
-            let top = '3px';
-            let borderTop = `5px solid ${machine.status}`;
-            return {
-                borderTop,
-                left,
-                width,
-                top,
-                height
-            };
-        },
-        setBorder(n) {
-            n = n - 1;
-            if (n === 0) {
-                return ['border-solid-left', 'border-dashed-right'];
-            } else if (n === 47) {
-                return ['border-solid-right'];
-            } else if (n % 2 === 0) {
-                return ['border-solid-double-left', 'border-dashed-right'];
-            } else if (n % 2 === 1) {
-                return '';
-            } else {
-                return '';
-            }
-        },
         onDrop(n, event) {
             n = n - 1;
             event.target.classList.remove('dragHover'); // remove highlight on day square
@@ -1046,114 +359,14 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.scroll-box-grid {
-    height: 100%;
-    overflow: auto;
-}
-.line-grid-wrap {
-    cursor: pointer;
-    overflow: hidden;
-    width: 100%;
-    border: 2px solid white;
-    color: white;
-    padding: 5px 10px;
-    margin: 0 0 10px;
-}
-.border {
-    border-top: 1px solid #252525;
-    border-bottom: 1px solid #252525;
-}
-.border-solid-right {
-    border-right: 1px solid white;
-}
-.border-solid-left {
-    border-left: 1px solid white;
-}
-.border-dashed-right {
-    background-image: linear-gradient(white 33%, rgba(255, 255, 255, 0) 0%);
-    background-position: right;
-    background-size: 1px 17px;
-    background-repeat: repeat-y;
-}
-.border-dashed-left {
-    border-left: 1px dashed white;
-}
-.slotHeader {
-    display: inline-block;
-    width: 75px;
-    min-width: 75px;
-    height: 75px;
-    box-sizing: border-box;
-    text-align: center;
-}
-.slot {
-    display: inline-block;
-    box-sizing: border-box;
-    text-align: center;
-}
-.small-size {
-    width: 50px;
-    min-width: 50px;
-    height: 50px;
-}
-.medium-size {
-    width: 75px;
-    min-width: 75px;
-    height: 75px;
-}
-.large-size {
-    width: 100px;
-    min-width: 100px;
-    height: 100px;
-}
-.machine-title {
-    height: 75px;
-    line-height: 75px;
-}
-.timeSlots {
-    overflow-x: auto;
-}
-.entry {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #252525;
-}
-.relative {
-    position: relative;
-}
-.workOrderId {
-    color: white;
-    font-weight: 500;
-}
+<style lang="scss" scoped>
 .dragHover {
     box-shadow: inset 0 0 0.2em 0.2em yellow;
 }
-.timeEntry {
-    margin-left: -10px;
-    margin-right: 10px;
+.scroll-vertical {
+    overflow-y: scroll;
 }
-.splitpanes.default-theme .splitpanes__pane {
-    background-color: transparent;
-}
-.splitpanes.default-theme .splitpanes__pane {
-    height: 20px;
-}
-.splitpanes.default-theme .splitpanes__splitter:after,
-.splitpanes.default-theme .splitpanes__splitter:before {
-    background-color: black;
-}
-.default-theme.splitpanes--horizontal > .splitpanes__splitter,
-.default-theme .splitpanes--horizontal > .splitpanes__splitter {
-    height: 40px;
-}
-.noScrollbar::-webkit-scrollbar {
-    display: none;
-}
-#scrollContainer::-webkit-scrollbar {
-    display: none;
+.timeSlots {
+    overflow-x: auto;
 }
 </style>
