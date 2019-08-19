@@ -8,7 +8,10 @@
                     @click="showFilterDialog = !showFilterDialog"
                     >filter_list</v-icon
                 >
-                <v-icon large @click="appearanceShowDialog" class="mr-3"
+                <v-icon
+                    large
+                    @click="showAppearanceDialog = !showAppearanceDialog"
+                    class="mr-3"
                     >tune</v-icon
                 >
                 <v-icon large>insert_chart_outlined</v-icon>
@@ -123,7 +126,11 @@
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="sbdBlackGrey pr-3 pl-1">
-                    <v-btn flat large color="sbdYellow" @click="reset"
+                    <v-btn
+                        flat
+                        large
+                        color="sbdYellow"
+                        @click="showFilterDialog = false"
                         >Reset Filters</v-btn
                     >
                     <v-spacer></v-spacer>
@@ -134,7 +141,13 @@
                         @click="showFilterDialog = false"
                         >Cancel</v-btn
                     >
-                    <v-btn large light color="sbdYellow">Apply</v-btn>
+                    <v-btn
+                        large
+                        light
+                        color="sbdYellow"
+                        @click="showFilterDialog = false"
+                        >Apply</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -192,7 +205,13 @@
                     </v-container>
                 </v-card-text>
                 <v-card-actions class="sbdBlackGrey pr-3 pl-1">
-                    <v-btn flat large color="sbdYellow">Reset Appearance</v-btn>
+                    <v-btn
+                        flat
+                        large
+                        color="sbdYellow"
+                        @click="showAppearanceDialog = false"
+                        >Reset Appearance</v-btn
+                    >
                     <v-spacer></v-spacer>
                     <v-btn
                         large
@@ -201,7 +220,13 @@
                         @click="showAppearanceDialog = false"
                         >Cancel</v-btn
                     >
-                    <v-btn large light color="sbdYellow">Apply</v-btn>
+                    <v-btn
+                        large
+                        light
+                        color="sbdYellow"
+                        @click="showAppearanceDialog = false"
+                        >Apply</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -210,9 +235,9 @@
 
 <script>
 import moment from 'moment';
-import machines from '@/data/machines.json';
 import MachineEntry from '@/components/MachineEntry';
 import GridLayout from '@/components/GridLayout';
+import { mapState } from 'vuex';
 
 export default {
     name: 'FifteenLayout',
@@ -240,7 +265,6 @@ export default {
         dialogAppearance: {},
         filterValid: false,
         filter: {},
-        machines: machines,
         viewBy: ['30 Min', '2 Hours', '4 Hours', '6 Hours'],
         rows: ['S', 'M', 'L'],
         times: [{ name: '12 Hour', value: 12 }, { name: '24 Hour', value: 24 }],
@@ -262,6 +286,9 @@ export default {
         }
     }),
     computed: {
+        ...mapState({
+            machines: state => state.machines || []
+        }),
         timesComputed() {
             return [
                 { name: '12 Hour', value: 12 },
@@ -286,40 +313,6 @@ export default {
                     .subtract(1, 'day')
                     .format('MM/DD/YY');
             }
-        },
-        reset(form) {
-            this.$refs[form].reset();
-        },
-        setSize(val) {
-            if (val === 'small') {
-                this.styleData.height = '50px';
-                this.styleData.width = '50px';
-                this.styleData.minWidth = '50px';
-                this.styleData.maxWidth = '50px';
-            }
-        },
-        appearanceShowDialog() {
-            this.appearanceDialog = Object.assign({}, this.appearance);
-            this.showAppearanceDialog = !this.showAppearanceDialog;
-        },
-        appearanceReset() {
-            this.appearanceDialog = Object.assign({}, this.appearance);
-        },
-        appearanceApply() {
-            this.appearance = Object.assign({}, this.appearanceDialog);
-            this.resizePlanner(this.appearance.rows);
-            this.show12 = this.appearance.time === 12;
-
-            this.showAppearanceDialog = false;
-        },
-        resizePlanner(size) {
-            this.slotStyle.width = this.plannerSizes[size];
-            this.slotStyle.height = this.plannerSizes[size];
-            this.slotStyle.minWidth = this.plannerSizes[size];
-            this.leftSlotStyle.height = this.plannerSizes[size];
-            this.leftSlotStyle.lineHeight = this.plannerSizes[size];
-            this.headerStyle.width = this.plannerSizes[size];
-            this.headerStyle.minWidth = this.plannerSizes[size];
         }
     }
 };

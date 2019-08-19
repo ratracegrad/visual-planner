@@ -15,14 +15,15 @@
             :key="machine.name"
             class="relative"
         >
-            <GridCell
-                v-for="n in 48"
-                :key="n"
-                :machines="machines"
-                :machine="machine"
-                :slotStyle="slotStyle"
-                :n="n"
-            ></GridCell>
+            <template v-for="n in 48">
+                <GridCell
+                    :key="n"
+                    :machines="machines"
+                    :machine="machine"
+                    :slotStyle="slotStyle"
+                    :n="n"
+                ></GridCell>
+            </template>
 
             <JobEntry
                 v-for="(entry, i) in machine.data"

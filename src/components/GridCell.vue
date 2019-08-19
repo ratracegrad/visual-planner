@@ -1,5 +1,5 @@
 <template>
-    <AppDrop @drop="moveJobEntry">
+    <AppDrop @drop="moveJobEntry" :style="slotStyle">
         <div
             class="d-inline-flex align-center justify-center slot border"
             :class="setBorder(n)"
