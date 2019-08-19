@@ -49,10 +49,7 @@ export default {
                 return '';
             }
         },
-        moveJobEntry({ jobId, fromMachine }, toMachine) {
-            console.log('fromMachine', fromMachine);
-            console.log('toMachine', toMachine);
-            console.log('jobId', jobId);
+        moveJobEntry({ jobId, fromMachine }) {
             // get item to move
             let machineIndex = this.machines.findIndex(
                 machine => machine.id === fromMachine
